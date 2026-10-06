@@ -1,0 +1,422 @@
+{% extends "base.html" %}
+{% block content %}
+{% if 'Toán' in subject.name %}
+  {% set subject_svg = 'svg/math.svg' %}
+  {% set subject_icon = '∑' %}
+{% elif 'Ngữ văn' in subject.name %}
+  {% set subject_svg = 'svg/literature.svg' %}
+  {% set subject_icon = '✍' %}
+{% elif 'Tiếng Anh' in subject.name %}
+  {% set subject_svg = 'svg/english.svg' %}
+  {% set subject_icon = 'A' %}
+{% elif 'Vật lý' in subject.name %}
+  {% set subject_svg = 'svg/physics.svg' %}
+  {% set subject_icon = '⚛' %}
+{% elif 'Hóa học' in subject.name %}
+  {% set subject_svg = 'svg/chemistry.svg' %}
+  {% set subject_icon = '⚗' %}
+{% elif 'Sinh học' in subject.name %}
+  {% set subject_svg = 'svg/biology.svg' %}
+  {% set subject_icon = '🧬' %}
+{% elif 'Lịch sử' in subject.name %}
+  {% set subject_svg = 'svg/history.svg' %}
+  {% set subject_icon = '🏛' %}
+{% elif 'Địa lý' in subject.name %}
+  {% set subject_svg = 'svg/geography.svg' %}
+  {% set subject_icon = '🗺' %}
+{% else %}
+  {% set subject_svg = 'svg/civics.svg' %}
+  {% set subject_icon = '⚖' %}
+{% endif %}
+
+<style>
+  .chapter-grid-two {
+    display: grid;
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+    gap: 24px;
+    align-items: stretch;
+  }
+
+  .chapter-grid-two > * {
+    height: 100%;
+  }
+
+  .module-card-body {
+    flex: 1;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    text-align: center;
+    gap: 18px;
+    padding-top: 6px;
+  }
+
+  .study-module-card,
+  .quiz-box,
+  .term-check-card {
+    display: flex;
+    flex-direction: column;
+    justify-content: space-between;
+    min-height: 280px;
+    height: 100%;
+  }
+
+  .study-module-card .module-chip,
+  .term-check-card .module-chip,
+  .quiz-box .module-chip {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    margin: 0 auto;
+    text-align: center;
+  }
+
+  .study-module-card .meta,
+  .term-check-card .meta,
+  .quiz-box .meta,
+  .quiz-box .title {
+    text-align: center;
+    max-width: 320px;
+    margin: 0 auto;
+    line-height: 1.7;
+  }
+
+  .quiz-box .title,
+  .term-check-card .title {
+    font-weight: 800;
+    letter-spacing: .01em;
+  }
+
+  .quiz-cta {
+    display: flex;
+    justify-content: center;
+    width: 100%;
+    margin-top: 18px;
+  }
+
+  .study-module-card .btn,
+  .study-module-card .module-empty-note,
+  .term-check-card .btn,
+  .term-check-card .module-empty-note,
+  .quiz-box .btn {
+    margin-top: auto;
+  }
+
+  .quiz-box .btn {
+    min-width: 172px;
+  }
+
+  .term-check-grid {
+    display: grid;
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+    gap: 24px;
+    align-items: stretch;
+  }
+
+  .term-check-grid > * {
+    height: 100%;
+  }
+
+  .term-check-card {
+    position: relative;
+    overflow: hidden;
+    min-height: 310px;
+    padding: 30px 26px 26px;
+    border-radius: 28px;
+    background:
+      radial-gradient(circle at top right, rgba(255,255,255,.24), transparent 30%),
+      linear-gradient(145deg, rgba(22, 93, 104, 0.98), rgba(9, 46, 54, 0.98));
+    border: 1px solid rgba(255,255,255,.14);
+    box-shadow: 0 22px 48px rgba(3, 14, 17, 0.24);
+  }
+
+  .term-check-card::before,
+  .term-check-card::after {
+    content: "";
+    position: absolute;
+    border-radius: 999px;
+    pointer-events: none;
+  }
+
+  .term-check-card::before {
+    inset: auto auto -68px -56px;
+    width: 180px;
+    height: 180px;
+    background: radial-gradient(circle, rgba(99,214,200,.24), transparent 68%);
+  }
+
+  .term-check-card::after {
+    top: -42px;
+    right: -28px;
+    width: 164px;
+    height: 164px;
+    background: radial-gradient(circle, rgba(255,255,255,.16), transparent 68%);
+  }
+
+  .term-check-layout {
+    position: relative;
+    z-index: 1;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: space-between;
+    gap: 18px;
+    width: 100%;
+    height: 100%;
+    text-align: center;
+  }
+
+  .term-check-icon {
+    width: 82px;
+    height: 82px;
+    border-radius: 24px;
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 2.15rem;
+    background: linear-gradient(145deg, rgba(99,214,200,.28), rgba(184,243,235,.22));
+    border: 1px solid rgba(255,255,255,.16);
+    box-shadow: inset 0 1px 0 rgba(255,255,255,.16), 0 12px 24px rgba(0,0,0,.16);
+    flex-shrink: 0;
+    margin: 0 auto;
+  }
+
+  .term-check-copy {
+    min-width: 0;
+    display: flex;
+    flex-direction: column;
+    gap: 12px;
+    text-align: center;
+    align-items: center;
+    justify-content: center;
+    flex: 1;
+    width: 100%;
+  }
+
+  .term-check-copy .module-chip {
+    margin: 0 auto;
+    padding: 8px 14px;
+    background: rgba(255,255,255,.12);
+    border: 1px solid rgba(255,255,255,.12);
+    backdrop-filter: blur(8px);
+  }
+
+  .term-check-copy .title,
+  .term-check-copy .meta {
+    margin: 0;
+    max-width: none;
+    text-align: center;
+  }
+
+  .term-check-copy .title {
+    font-size: clamp(1.18rem, 2vw, 1.5rem);
+    line-height: 1.3;
+    max-width: 18ch;
+  }
+
+  .term-check-copy .meta {
+    line-height: 1.7;
+    max-width: 32ch;
+    color: rgba(255,255,255,.82);
+  }
+
+  .term-check-action {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    width: 100%;
+    margin-top: auto;
+  }
+
+  .term-check-action .btn,
+  .term-check-action .module-empty-note {
+    min-width: 190px;
+    justify-content: center;
+  }
+
+  .term-check-action .btn {
+    box-shadow: 0 12px 28px rgba(3,14,17,.22);
+  }
+
+  @media (max-width: 992px) {
+    .chapter-grid-two,
+    .term-check-grid {
+      grid-template-columns: 1fr;
+    }
+  }
+
+  @media (max-width: 640px) {
+    .term-check-card {
+      padding: 22px 18px;
+      min-height: 0;
+    }
+
+    .term-check-icon {
+      width: 66px;
+      height: 66px;
+      font-size: 1.7rem;
+      border-radius: 20px;
+    }
+
+    .term-check-action {
+      width: 100%;
+    }
+
+    .term-check-action .btn,
+    .term-check-action .module-empty-note {
+      width: 100%;
+      min-width: 0;
+    }
+  }
+</style>
+
+<div class="subject-detail-layout">
+  <div class="subject-detail-main">
+    <div class="page-header-card mb-4">
+      <div>
+        <div class="badge-soft mb-3"><span class="glow-dot"></span> {{ subject.name }} · Lớp {{ current_user.grade_level }}</div>
+        <h2 class="page-title mb-1">Lộ trình môn {{ subject.name }}</h2>
+        <p class="text-muted mb-0">Nội dung được chia theo từng chương và từng mốc kiểm tra để bạn học, luyện tập và ôn tập đúng vị trí.</p>
+      </div>
+      <div class="page-header-actions">
+        <a class="btn btn-outline-light" href="{{ url_for('student.dashboard') }}">Về trang học tập</a>
+      </div>
+    </div>
+
+    {% set chapter_only_blocks = chapter_blocks | selectattr('kind', 'equalto', 'chapter') | list %}
+    {% set term_only_blocks = chapter_blocks | rejectattr('kind', 'equalto', 'chapter') | list %}
+
+    {% for block in chapter_only_blocks %}
+    {% set ai_titles = [
+      '⚡ Bứt tốc 20 câu',
+      '🚀 Tăng tốc ôn luyện',
+      '🎯 Thử sức siêu nhanh',
+      '🧠 Chạm đỉnh ghi nhớ',
+      '🔥 Test nhanh cùng AI',
+      '🌟 Chinh phục chương này'
+    ] %}
+    <section class="chapter-block surface" id="chapter-{{ loop.index }}">
+      <div class="chapter-title-row">
+        <div>
+          <div class="section-title mb-1">{{ block.heading }}</div>
+          <div class="text-muted small">Học bài, luyện bài tập, kiểm tra và tạo đề AI trong cùng một bố cục đồng đều.</div>
+        </div>
+      </div>
+
+      <div class="chapter-grid-two">
+        <div class="chapter-item study-module-card {% if not block.lesson %}module-card-disabled{% endif %}">
+          <div class="module-card-body">
+            <div class="module-chip">📘 Bài học</div>
+            <div class="meta">{{ ('Nội dung trọng tâm của ' ~ (block.topic or ('chương ' ~ block.chapter)) ~ ' để bạn nắm kiến thức cốt lõi.') if block.lesson else 'Bài học cho chương này đang được cập nhật.' }}</div>
+          </div>
+          {% if block.lesson %}<a class="btn btn-outline-light btn-sm" href="{{ url_for('student.lesson_detail', item_id=block.lesson.id) }}">Vào học</a>{% else %}<span class="module-empty-note">Chưa khả dụng</span>{% endif %}
+        </div>
+
+        <div class="chapter-item study-module-card {% if not block.exercise %}module-card-disabled{% endif %}">
+          <div class="module-card-body">
+            <div class="module-chip">📝 Bài tập</div>
+            <div class="meta">{{ ('Luyện tập phần ' ~ (block.topic or ('chương ' ~ block.chapter)) ~ ' để củng cố kiến thức ngay sau khi học.') if block.exercise else 'Bài tập cho chương này đang được cập nhật.' }}</div>
+          </div>
+          {% if block.exercise %}<a class="btn btn-outline-light btn-sm" href="{{ url_for('student.exercise_detail', item_id=block.exercise.id) }}">Làm bài tập</a>{% else %}<span class="module-empty-note">Chưa khả dụng</span>{% endif %}
+        </div>
+
+        <div class="chapter-item study-module-card {% if not block.test %}module-card-disabled{% endif %}">
+          <div class="module-card-body">
+            <div class="module-chip">🧪 Bài kiểm tra</div>
+            <div class="meta">{{ ('Bài kiểm tra phần ' ~ (block.topic or ('chương ' ~ block.chapter)) ~ ' đã sẵn sàng để bạn đánh giá mức độ nắm bài.') if block.test else 'Bài kiểm tra cho chương này sẽ hiển thị tại đây khi được tạo.' }}</div>
+          </div>
+          {% if block.test %}<a class="btn btn-outline-light btn-sm" href="{{ url_for('student.test_detail', item_id=block.test.id) }}">Vào kiểm tra</a>{% else %}<span class="module-empty-note">Chưa khả dụng</span>{% endif %}
+        </div>
+
+        <div class="quiz-box study-module-card">
+          <div class="module-card-body">
+            <div class="module-chip">🤖 Tạo đề nhanh bằng AI</div>
+            <div class="title">{{ ai_titles | random }}{% if block.topic %} · {{ block.topic|lower }}{% endif %}</div>
+          </div>
+          <div class="quiz-cta">
+            <a class="btn btn-primary btn-sm" href="{{ url_for('student.ai_quiz_detail', subject_id=subject.id, chapter=block.chapter or 1) }}">Tạo đề 20 câu</a>
+          </div>
+        </div>
+      </div>
+    </section>
+    {% endfor %}
+
+    {% if term_only_blocks %}
+    <section class="chapter-block surface" id="term-check-overview">
+      <div class="chapter-title-row">
+        <div>
+          <div class="section-title mb-1">Bài kiểm tra học kì</div>
+          <div class="text-muted small">Giữa kì và cuối kì được hiển thị thành 2 thẻ song song để dễ theo dõi, thao tác và nhìn cân đối hơn.</div>
+        </div>
+      </div>
+
+      {% set midterm_titles = [
+        'Bứt tốc giữa học kì',
+        'Tăng tốc chinh phục điểm cao',
+        'Kiểm tra năng lực giữa chặng',
+        'Chạm mốc tiến bộ nổi bật',
+        'Thử thách giữa kì bản lĩnh'
+      ] %}
+      {% set final_titles = [
+        'Về đích học kì thật chắc',
+        'Đánh giá tổng hợp nổi bật',
+        'Bản lĩnh chốt điểm cuối kì',
+        'Sẵn sàng bứt phá cuối chặng',
+        'Tổng lực cho đợt kiểm tra lớn'
+      ] %}
+      <div class="term-check-grid">
+        {% for block in term_only_blocks %}
+        {% set is_midterm = 'giữa' in block.heading|lower %}
+        {% set hero_title = (midterm_titles | random) if is_midterm else (final_titles | random) %}
+        <div class="term-check-card {% if not block.test %}module-card-disabled{% endif %}">
+          <div class="term-check-layout">
+            <div class="term-check-icon">{% if is_midterm %}📚{% else %}🏁{% endif %}</div>
+            <div class="term-check-copy">
+              <div class="module-chip">{% if is_midterm %}Giai đoạn tăng tốc{% else %}Cột mốc bứt phá{% endif %}</div>
+              <div class="title">{{ hero_title }}</div>
+              <div class="meta">{% if is_midterm %}Ôn đúng trọng tâm, giữ nhịp học ổn định và sẵn sàng bước vào lượt đánh giá quan trọng của môn {{ subject.name|lower }}.{% else %}Tập trung kiến thức then chốt, rà soát lại toàn bộ phần đã học và bước vào bài kiểm tra với bố cục rõ ràng, nổi bật hơn.{% endif %}</div>
+            </div>
+            <div class="term-check-action">
+              {% if block.test %}<a class="btn btn-primary btn-sm" href="{{ url_for('student.test_detail', item_id=block.test.id) }}">Vào bài kiểm tra</a>{% else %}<span class="module-empty-note">Chưa khả dụng</span>{% endif %}
+            </div>
+          </div>
+        </div>
+        {% endfor %}
+      </div>
+    </section>
+    {% endif %}
+  </div>
+
+  <aside class="subject-detail-aside surface">
+    <div class="subject-badge-wrap subject-badge-wrap-compact">
+      <span class="subject-badge">{{ subject_icon }}</span>
+      <img src="{{ url_for('static', filename=subject_svg) }}" alt="{{ subject.name }}">
+    </div>
+    <div class="subject-side-kicker">Môn học hiện tại</div>
+    <div class="card-title-strong subject-side-title mb-2">{{ subject.name }}</div>
+    <div class="text-muted">Theo dõi nhanh các chương và mốc kiểm tra của môn {{ subject.name|lower }} trong một sidebar gọn và đồng đều hơn.</div>
+
+    <div class="subject-detail-actions">
+      <a class="btn btn-primary" href="{{ url_for('student.plan_builder', subject_id=subject.id) }}">Tạo chương trình phù hợp</a>
+      <a class="btn btn-outline-light" href="{{ url_for('student.ai_center', subject_id=subject.id) }}">Mở AI học tập</a>
+    </div>
+
+    <div class="admin-section-title mt-4 mb-2">Đi nhanh theo nội dung</div>
+    <div class="subject-detail-nav">
+      {% for block in chapter_only_blocks %}
+      <a href="#chapter-{{ loop.index }}">
+        <span>{{ block.heading }}</span>
+        <span>Đi tới</span>
+      </a>
+      {% endfor %}
+      {% if term_only_blocks %}
+      <a href="#term-check-overview">
+        <span>Bài kiểm tra học kì</span>
+        <span>Đi tới</span>
+      </a>
+      {% endif %}
+    </div>
+  </aside>
+</div>
+{% endblock %}

@@ -1,0 +1,27 @@
+
+{% extends "base.html" %}
+{% block content %}
+<div class="surface p-4">
+  <div class="section-title mb-3">Kết quả của bạn</div>
+  <div class="table-responsive">
+    <table class="table">
+      <thead>
+        <tr><th>Loại</th><th>Nội dung</th><th>Điểm</th><th>Nhận xét</th><th>Thời gian</th></tr>
+      </thead>
+      <tbody>
+        {% for item in items %}
+        <tr>
+          <td>{% if item.test_id %}Kiểm tra{% else %}Bài tập{% endif %}</td>
+          <td><a class="table-link" href="{{ url_for('student.submission_detail', submission_id=item.id) }}">{% if item.test %}{{ item.test.title }}{% elif item.exercise %}{{ item.exercise.title }}{% endif %}</a></td>
+          <td><a class="score-badge-link" href="{{ url_for('student.submission_detail', submission_id=item.id) }}">{{ item.score or '-' }}</a></td>
+          <td>{{ item.feedback or '-' }}</td>
+          <td>{{ item.created_at.strftime('%Y-%m-%d %H:%M') }}</td>
+        </tr>
+        {% else %}
+        <tr><td colspan="5">Chưa có dữ liệu</td></tr>
+        {% endfor %}
+      </tbody>
+    </table>
+  </div>
+</div>
+{% endblock %}

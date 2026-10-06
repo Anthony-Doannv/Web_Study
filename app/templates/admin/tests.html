@@ -1,0 +1,51 @@
+{% extends "base.html" %}
+{% block content %}
+<div class="teacher-shell">
+  {% set active = 'tests' %}
+  {% include '_partials/admin_sidebar.html' %}
+  <main>
+    <div class="page-header-card mb-4">
+      <div>
+        <h2 class="page-title mb-1">Quản lý bài kiểm tra</h2>
+        <p class="text-muted mb-0">Bố cục tiêu đề, bộ lọc, bảng và nút thao tác đã được căn chỉnh lại đồng đều để dễ nhìn hơn.</p>
+      </div>
+      <div class="page-header-actions">
+        <a href="{{ url_for('admin.dashboard') }}" class="btn btn-outline-light">Về trang quản trị</a>
+      </div>
+    </div>
+    <div class="surface p-4 mb-4">
+      <form class="row g-3 align-items-end">
+        <div class="col-md-4">
+          <label class="form-label">Lọc theo môn</label>
+          <select class="form-select" name="subject_id">
+            <option value="">Tất cả môn học</option>
+            {% for s in subjects %}<option value="{{ s.id }}" {% if subject_id == s.id %}selected{% endif %}>{{ s.name }}</option>{% endfor %}
+          </select>
+        </div>
+        <div class="col-md-3">
+          <label class="form-label">Lọc theo lớp</label>
+          <select class="form-select" name="grade_level">
+            <option value="">Tất cả khối</option>
+            {% for g in grade_levels %}<option value="{{ g }}" {% if grade_level == g %}selected{% endif %}>Lớp {{ g }}</option>{% endfor %}
+          </select>
+        </div>
+        <div class="col-md-2 d-grid"><button class="btn btn-outline-light">Lọc dữ liệu</button></div>
+        <div class="col-md-3 d-flex justify-content-md-end gap-2 flex-wrap">
+          <a href="{{ url_for('admin.ai_generate_test') }}" class="btn btn-outline-light">AI tạo đề</a>
+          <a href="{{ url_for('admin.create_test') }}" class="btn btn-primary">+ Thêm bài kiểm tra</a>
+        </div>
+      </form>
+    </div>
+    <div class="surface p-4">
+      <div class="section-title mb-3">Danh sách bài kiểm tra</div>
+      <div class="table-responsive">
+        <table class="table table-aligned">
+          <thead><tr><th>Tiêu đề</th><th>Lớp</th><th>Chương</th><th>Môn</th><th>Thao tác</th></tr></thead>
+          <tbody>{% for item in items %}<tr><td class="fw-semibold">{{ item.title }}</td><td>{{ item.grade_level }}</td><td>{{ item.chapter }}</td><td>{{ item.subject.name }}</td><td><div class="table-actions"><a class="btn btn-warning btn-sm" href="{{ url_for('admin.edit_test', item_id=item.id) }}">Sửa</a><form method="post" action="{{ url_for('admin.delete_test', item_id=item.id) }}">
+<input type="hidden" name="csrf_token" value="{{ csrf_token() }}"><button class="btn btn-danger btn-sm">Xóa</button></form></div></td></tr>{% endfor %}</tbody>
+        </table>
+      </div>
+    </div>
+  </main>
+</div>
+{% endblock %}

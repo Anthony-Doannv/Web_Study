@@ -1,0 +1,113 @@
+{% extends "base.html" %}
+{% block content %}
+<div class="teacher-shell">
+  {% set active = 'dashboard' %}
+  {% include '_partials/teacher_sidebar.html' %}
+  <main>
+    <div class="page-header-card mb-4">
+      <div>
+        <div class="badge-soft mb-3"><span class="glow-dot"></span> Không gian làm việc của giáo viên</div>
+        <h2 class="page-title mb-1">Trang quản lý</h2>
+        <p class="text-muted mb-0">Tập trung vào quản lý nội dung giảng dạy. Các biểu đồ tổng quan đã được chuyển sang mục Kết quả học tập để theo dõi thuận mắt hơn.</p>
+      </div>
+      <div class="page-header-actions">
+        <a class="btn btn-outline-light" href="{{ url_for('teacher.learning_results') }}">Mở kết quả học tập</a>
+      </div>
+    </div>
+
+    <div class="row g-3 mb-4">
+      {% for label, value in stats.items() %}
+      <div class="col-md-6 col-xl-3 fade-up-2">
+        <div class="metric-card metric-card-soft h-100">
+          <div class="text-muted">{{ label }}</div>
+          <div class="big mt-2">{{ value }}</div>
+        </div>
+      </div>
+      {% endfor %}
+    </div>
+
+    <div class="row g-4 mb-4">
+      <div class="col-md-6 col-xl-3">
+        <a href="{{ url_for('teacher.lessons') }}" class="quick-panel-link">
+          <div class="quick-panel-card quick-panel-card-soft h-100">
+            <div class="icon-badge mb-3">📘</div>
+            <div class="card-title-strong mb-2">Bài học</div>
+            <div class="text-muted">Tạo mới, chỉnh sửa nội dung và sắp xếp bài học theo từng khối lớp.</div>
+          </div>
+        </a>
+      </div>
+      <div class="col-md-6 col-xl-3">
+        <a href="{{ url_for('teacher.exercises') }}" class="quick-panel-link">
+          <div class="quick-panel-card quick-panel-card-soft h-100">
+            <div class="icon-badge mb-3">📝</div>
+            <div class="card-title-strong mb-2">Bài tập</div>
+            <div class="text-muted">Quản lý ngân hàng bài tập và cập nhật đáp án mẫu đồng bộ.</div>
+          </div>
+        </a>
+      </div>
+      <div class="col-md-6 col-xl-3">
+        <a href="{{ url_for('teacher.tests') }}" class="quick-panel-link">
+          <div class="quick-panel-card quick-panel-card-soft h-100">
+            <div class="icon-badge mb-3">🧪</div>
+            <div class="card-title-strong mb-2">Bài kiểm tra</div>
+            <div class="text-muted">Tạo đề kiểm tra thường hoặc dùng AI tạo đề nhanh cho lớp.</div>
+          </div>
+        </a>
+      </div>
+      <div class="col-md-6 col-xl-3">
+        <a href="{{ url_for('teacher.students') }}" class="quick-panel-link">
+          <div class="quick-panel-card quick-panel-card-soft h-100">
+            <div class="icon-badge mb-3">👥</div>
+            <div class="card-title-strong mb-2">Quản lý học viên</div>
+            <div class="text-muted">Theo dõi danh sách học viên, lớp học, tần suất nộp bài và cập nhật nhanh thông tin cần thiết.</div>
+          </div>
+        </a>
+      </div>
+    </div>
+
+    <div class="row g-4">
+      <div class="col-lg-6">
+        <div class="surface p-4 h-100 content-panel-soft">
+          <div class="d-flex justify-content-between align-items-center flex-wrap gap-2 mb-3">
+            <div class="section-title mb-0">Bài học mới cập nhật</div>
+            <a class="btn btn-outline-light btn-sm" href="{{ url_for('teacher.lessons') }}">Xem tất cả</a>
+          </div>
+          <div class="list-group list-group-soft">
+            {% for item in recent_lessons %}
+            <div class="list-group-item d-flex justify-content-between align-items-center gap-3">
+              <div>
+                <div class="fw-semibold">{{ item.title }}</div>
+                <div class="small text-muted">{{ item.subject.name }} · Khối {{ item.grade_level }} · Chương {{ item.chapter }}</div>
+              </div>
+            </div>
+            {% else %}
+            <div class="list-group-item">Chưa có bài học nào.</div>
+            {% endfor %}
+          </div>
+        </div>
+      </div>
+      <div class="col-lg-6">
+        <div class="surface p-4 h-100 content-panel-soft">
+          <div class="d-flex justify-content-between align-items-center flex-wrap gap-2 mb-3">
+            <div class="section-title mb-0">Quản lý học viên nổi bật</div>
+            <a class="btn btn-outline-light btn-sm" href="{{ url_for('teacher.students') }}">Mở danh sách học viên</a>
+          </div>
+          <div class="list-group list-group-soft">
+            {% for row in student_overview %}
+            <div class="list-group-item d-flex justify-content-between align-items-center gap-3">
+              <div>
+                <div class="fw-semibold">{{ row.student.full_name }}</div>
+                <div class="small text-muted">Khối {{ row.student.grade_level or '-' }} · {{ row.student.class_name or 'Chưa cập nhật lớp' }} · {{ row.submission_count }} lượt nộp</div>
+              </div>
+              <span class="support-target-badge">TB {{ row.avg_score }}</span>
+            </div>
+            {% else %}
+            <div class="list-group-item">Chưa có học viên nào.</div>
+            {% endfor %}
+          </div>
+        </div>
+      </div>
+    </div></div>
+  </main>
+</div>
+{% endblock %}

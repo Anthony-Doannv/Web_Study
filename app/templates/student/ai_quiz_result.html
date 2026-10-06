@@ -1,0 +1,48 @@
+{% extends "base.html" %}
+{% block content %}
+<div class="surface p-4 p-lg-5">
+  <div class="badge-soft mb-3">Kết quả đề AI</div>
+  <div class="d-flex flex-wrap justify-content-between align-items-start gap-3 mb-4">
+    <div>
+      <h2 class="fw-bold mb-2">{{ subject.name }} · Chương {{ chapter }}</h2>
+      <p class="mb-2 text-muted">Chủ đề: {{ topic_hint }}</p>
+      <div class="small text-muted">Bạn đã hoàn thành bộ đề AI ngẫu nhiên tách riêng với phần bài tập và bài kiểm tra.</div>
+    </div>
+    <div class="answer-card p-3" style="min-width:240px;">
+      <div class="small text-muted mb-1">Điểm</div>
+      <div class="fw-bold" style="font-size:2rem;">{{ score }}</div>
+      <div class="text-muted small">Đúng {{ correct }}/{{ total }} câu · Đã chọn {{ answered_count }}/{{ total }} câu</div>
+    </div>
+  </div>
+
+  {% for item in review_items %}
+  <div class="answer-card mb-3 p-3 p-lg-4">
+    <div class="d-flex justify-content-between align-items-start gap-3 mb-3 flex-wrap">
+      <div>
+        <div class="badge-soft mb-2">Câu {{ item.index }}</div>
+        <h5 class="mb-0">{{ item.question }}</h5>
+      </div>
+      <span class="exam-difficulty {{ 'difficulty-dễ' if item.is_correct else 'difficulty-khó' }}">{{ 'Đúng' if item.is_correct else 'Cần xem lại' }}</span>
+    </div>
+    <div class="option-grid">
+      {% for option in item.options %}
+      {% set choice = ['A','B','C','D'][loop.index0] %}
+      <div class="choice-tile {% if choice == item.correct %}is-correct{% elif choice == item.selected and item.selected != item.correct %}is-wrong{% endif %}">
+        <span class="choice-mark">{{ choice }}</span>
+        <span class="choice-text">{{ option }}</span>
+      </div>
+      {% endfor %}
+    </div>
+    <div class="small mt-3">
+      Bạn chọn: <strong>{{ item.selected or 'Chưa chọn' }}</strong> · Đáp án đúng: <strong>{{ item.correct }}</strong>
+    </div>
+    {% if item.explanation %}<div class="small text-muted mt-2">Gợi ý ôn lại: {{ item.explanation }}</div>{% endif %}
+  </div>
+  {% endfor %}
+
+  <div class="mt-4 d-flex gap-2 flex-wrap">
+    <a href="{{ url_for('student.ai_quiz_detail', subject_id=subject.id, chapter=chapter) }}" class="btn btn-primary">Tạo bộ đề AI mới</a>
+    <a href="{{ url_for('student.subject_detail', subject_id=subject.id) }}" class="btn btn-outline-light">Quay lại môn học</a>
+  </div>
+</div>
+{% endblock %}

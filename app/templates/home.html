@@ -1,0 +1,68 @@
+{% extends "base.html" %}
+{% block title %}EduAI{% endblock %}
+{% block content %}
+<div class="hero hero-premium mb-4 fade-up">
+  <div class="row align-items-center g-4">
+    <div class="col-lg-7">
+      <div class="badge-soft mb-3"><span class="glow-dot"></span> EduAI • Không gian học tập cao cấp • Mượt, rõ, tập trung</div>
+      <h1 class="fw-bold mb-3">Kỷ nguyên học tập mới: Cá nhân hóa lộ trình bằng Trí tuệ nhân tạo.</h1>
+      <p class="lead text-muted mb-4">Nền tảng học tập toàn diện dành cho học sinh từ lớp 6 - 12. Với sự hỗ trợ tức thì từ AI, mọi thắc mắc đều được giải đáp cặn kẽ, giúp bạn nắm vững kiến thức, tiết kiệm thời gian ôn luyện và tự tin bước vào mọi kỳ thi.</p>
+      <div class="d-flex gap-3 flex-wrap">
+        <a href="{{ url_for('auth.login') }}" class="btn btn-primary btn-lg pulse-soft">Đăng nhập ngay</a>
+        <a href="{{ url_for('auth.register') }}" class="btn btn-outline-light btn-lg">Tạo tài khoản học viên</a>
+      </div>
+      <div class="hero-quote mt-4">Học đúng trọng tâm, không học nhồi nhét nhờ lộ trình được AI tinh chỉnh liên tục.</div>
+      <div class="hero-quote hero-quote-alt mt-2">Không còn bế tắc với bài khó. Giải thích tận gốc rễ vấn đề chỉ sau vài giây.</div>
+      <div class="hero-quote hero-quote-alt mt-2">Theo dõi sát sao sự tiến bộ mỗi ngày bằng hệ thống đánh giá năng lực chuẩn xác.</div>
+    </div>
+    <div class="col-lg-5">
+      <div class="hero-grid">
+        <div class="hero-stat-card">
+          <span>Không gian</span>
+          <strong>Tập trung</strong>
+          <small>Thiết kế tối giản, thân thiện, loại bỏ hoàn toàn xao nhãng để bạn chìm đắm vào học tập.</small>
+        </div>
+        <div class="hero-stat-card">
+          <span>Học tập</span>
+          <strong>6 - 12</strong>
+          <small>Kho nội dung và bài tập được chuẩn hóa theo format Bộ GD&ĐT, đầy đủ cho cấp THCS và THPT.</small>
+        </div>
+        <div class="hero-stat-card">
+          <span>AI hỗ trợ</span>
+          <strong>24/7</strong>
+          <small>Bí ý tưởng hay gặp bài khó? Hỏi là đáp ngay. AI gợi ý cách giải chi tiết từng bước mọi lúc mọi nơi.</small>
+        </div>
+        <div class="hero-stat-card">
+          <span>Quản lý</span>
+          <strong>Chặt chẽ</strong>
+          <small>Kết nối chặt chẽ giữa Học sinh và Giáo viên. Báo cáo tiến độ học tập minh bạch, rõ ràng.</small>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<div class="row g-4">
+  <div class="col-md-4 fade-up-2">
+    <div class="surface p-4 h-100">
+      <div class="icon-badge mb-3">📚</div>
+      <div class="card-title-strong mb-2">Học theo lộ trình rõ ràng</div>
+      <div class="text-muted">Bài học, bài tập và kiểm tra được xếp lại gọn hơn để học viên vào là biết cần học gì tiếp theo.</div>
+    </div>
+  </div>
+  <div class="col-md-4 fade-up-2">
+    <div class="surface p-4 h-100">
+      <div class="icon-badge mb-3">✨</div>
+      <div class="card-title-strong mb-2">AI đồng hành nổi bật hơn</div>
+      <div class="text-muted">Khu AI được nhấn bằng card, bóng đổ và khoảng thở tốt hơn để cảm giác tương tác hiện đại hơn.</div>
+    </div>
+  </div>
+  <div class="col-md-4 fade-up-2">
+    <div class="surface p-4 h-100">
+      <div class="icon-badge mb-3">🧩</div>
+      <div class="card-title-strong mb-2">Toàn web cùng một style</div>
+      <div class="text-muted">Navbar, form, bảng, thẻ nội dung và sidebar giờ đều đồng bộ cùng một ngôn ngữ thiết kế.</div>
+    </div>
+  </div>
+</div>
+{% endblock %}

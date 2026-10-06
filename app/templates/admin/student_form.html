@@ -1,0 +1,49 @@
+
+{% extends "base.html" %}
+{% block content %}
+<div class="row justify-content-center">
+    <div class="col-lg-8">
+        <div class="surface p-4 p-lg-5">
+            <h2 class="fw-bold mb-4">{% if student %}Cập nhật học sinh{% else %}Thêm học sinh{% endif %}</h2>
+
+            <form method="POST" class="row g-3">
+<input type="hidden" name="csrf_token" value="{{ csrf_token() }}">
+                <div class="col-md-6">
+                    <label class="form-label fw-semibold">Họ và tên</label>
+                    <input type="text" name="full_name" class="form-control" value="{{ student.full_name if student else '' }}" required>
+                </div>
+
+                <div class="col-md-6">
+                    <label class="form-label fw-semibold">Email</label>
+                    <input type="email" name="email" class="form-control" value="{{ student.email if student else '' }}" required>
+                </div>
+
+                <div class="col-md-4">
+                    <label class="form-label fw-semibold">Khối lớp</label>
+                    <select name="grade_level" class="form-select" required>
+                        <option value="">-- Chọn khối lớp --</option>
+                        {% for grade in range(6, 13) %}
+                        <option value="{{ grade }}" {% if student and student.grade_level == grade %}selected{% endif %}>Lớp {{ grade }}</option>
+                        {% endfor %}
+                    </select>
+                </div>
+
+                <div class="col-md-4">
+                    <label class="form-label fw-semibold">Lớp học</label>
+                    <input type="text" name="class_name" class="form-control" placeholder="Ví dụ: 10A1" value="{{ student.class_name if student else '' }}">
+                </div>
+
+                <div class="col-md-4">
+                    <label class="form-label fw-semibold">{% if student %}Mật khẩu mới{% else %}Mật khẩu{% endif %}</label>
+                    <input type="text" name="password" class="form-control" placeholder="{% if student %}Để trống nếu không đổi{% else %}Mặc định 123456{% endif %}">
+                </div>
+
+                <div class="col-12 d-flex gap-2 pt-2 flex-wrap">
+                    <button type="submit" class="btn btn-primary">{% if student %}Lưu thay đổi{% else %}Thêm học sinh{% endif %}</button>
+                    <a href="{{ url_for('admin.students') }}" class="btn btn-outline-light">Quay lại</a>
+                </div>
+            </form>
+        </div>
+    </div>
+</div>
+{% endblock %}

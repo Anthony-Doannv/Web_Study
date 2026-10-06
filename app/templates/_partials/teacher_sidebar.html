@@ -1,0 +1,15 @@
+<aside class="admin-sidebar fade-up role-sidebar sidebar-unified sidebar-teacher">
+  <div class="brand d-flex align-items-center mb-2"><span class="brand-mark pulse-soft">◉</span>WEB-AI Teacher</div>
+  <div class="text-muted small mb-4">Trang quản lý dành cho giáo viên</div>
+  <nav class="admin-menu">
+    <a class="{% if active == 'dashboard' %}active{% endif %}" href="{{ url_for('teacher.dashboard') }}"><span class="soft-icon">🏠</span><span>Trang quản lý</span></a>
+    <a class="{% if active == 'learning_results' %}active{% endif %}" href="{{ url_for('teacher.learning_results') }}"><span class="soft-icon">📈</span><span>Kết quả học tập</span></a>
+    <a class="{% if active == 'reports' %}active{% endif %}" href="{{ url_for('teacher.reports') }}"><span class="soft-icon">📊</span><span>Báo cáo</span></a>
+    <a class="{% if active == 'support' %}active{% endif %}" href="{{ url_for('teacher.support') }}"><span class="soft-icon">🛟</span><span>Hỗ trợ</span></a>
+  </nav>
+  <div class="admin-side-card mt-4 sidebar-note-card">
+    <div class="small text-muted">Vai trò hiện tại</div>
+    <div class="admin-role-big mt-2">TEACHER</div>
+    <div class="text-muted small mt-2">Quản lý nội dung giảng dạy, theo dõi kết quả học tập và hỗ trợ học viên.</div>
+  </div>
+</aside>

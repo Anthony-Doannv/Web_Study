@@ -1,0 +1,135 @@
+{% extends "base.html" %}
+{% block content %}
+<div class="hero mb-4 fade-up">
+  <div class="badge-soft mb-3">Lộ trình học cá nhân hóa</div>
+  <h2 class="fw-bold mb-2">Thiết kế chương trình phù hợp với bạn</h2>
+  <p class="text-muted mb-0">Chọn môn học, mục tiêu và phong cách học. Hệ thống sẽ tạo kế hoạch theo đúng số ngày bạn chọn, rõ ràng và dễ thực hiện.</p>
+</div>
+
+<div class="surface p-4 p-lg-5 fade-up-2">
+  <form method="post" class="row g-4" id="plan-builder-form">
+<input type="hidden" name="csrf_token" value="{{ csrf_token() }}">
+    <div class="col-md-6">
+      <label class="form-label">Môn học</label>
+      <select name="subject_id" class="form-select" required>
+        {% for s in subjects %}
+        <option value="{{ s.id }}">{{ s.name }}</option>
+        {% endfor %}
+      </select>
+    </div>
+    <div class="col-md-6">
+      <label class="form-label">Mục tiêu học tập</label>
+      <select name="goal" class="form-select" required>
+        <option value="Củng cố kiến thức">Củng cố kiến thức</option>
+        <option value="Tăng điểm nhanh">Tăng điểm nhanh</option>
+        <option value="Ôn kiểm tra giữa kỳ">Ôn kiểm tra giữa kỳ</option>
+        <option value="Ôn kiểm tra cuối kỳ">Ôn kiểm tra cuối kỳ</option>
+        <option value="Học chắc từ gốc">Học chắc từ gốc</option>
+      </select>
+    </div>
+    <div class="col-md-4">
+      <label class="form-label">Thời gian lộ trình</label>
+      <select name="plan_days" class="form-select" required>
+        {% for day, label in plan_day_presets %}
+        <option value="{{ day }}" {% if request.args.get('days', '7') == day|string %}selected{% endif %}>{{ label }}</option>
+        {% endfor %}
+      </select>
+    </div>
+    <div class="col-md-4">
+      <label class="form-label">Thời gian học mỗi ngày</label>
+      <select name="daily_time" class="form-select" required>
+        <option value="30 phút">30 phút</option>
+        <option value="45 phút">45 phút</option>
+        <option value="60 phút">60 phút</option>
+        <option value="90 phút">90 phút</option>
+        <option value="120 phút">120 phút</option>
+      </select>
+    </div>
+    <div class="col-md-4">
+      <label class="form-label">Chương đang yếu nhất</label>
+      <select name="focus_chapter" class="form-select" required>
+        {% for c in chapter_options %}
+        <option value="Chương {{ c }}">Chương {{ c }}</option>
+        {% endfor %}
+      </select>
+    </div>
+    <div class="col-md-4">
+      <label class="form-label">Mức độ hiện tại</label>
+      <select name="level" class="form-select" required>
+        <option value="Yếu">Yếu</option>
+        <option value="Trung bình">Trung bình</option>
+        <option value="Khá">Khá</option>
+        <option value="Giỏi">Giỏi</option>
+      </select>
+    </div>
+    <div class="col-md-6">
+      <label class="form-label">Phong cách học mong muốn</label>
+      <select name="style" class="form-select" required>
+        <option value="Nhiều bài tập">Nhiều bài tập</option>
+        <option value="Nhiều lý thuyết">Nhiều lý thuyết</option>
+        <option value="Cân bằng lý thuyết và bài tập">Cân bằng lý thuyết và bài tập</option>
+        <option value="Ôn ngắn gọn, trọng tâm">Ôn ngắn gọn, trọng tâm</option>
+      </select>
+    </div>
+    <div class="col-md-6">
+      <label class="form-label">Ghi chú thêm</label>
+      <input type="text" class="form-control" name="notes" placeholder="Ví dụ: sắp kiểm tra, cần ưu tiên bài tập vận dụng">
+    </div>
+    <div class="col-12">
+      <div class="plan-helper-box">
+        <div class="card-title-strong mb-2">Gợi ý nhanh - bấm là AI tạo lộ trình ngay</div>
+        <div class="text-muted mb-3" style="line-height: 1.85;">
+          Chọn sẵn một mẫu bên dưới để hệ thống tự điền thông tin và tạo lộ trình ngay. Bạn vẫn có thể chỉnh lại trước nếu muốn.
+        </div>
+        <div class="row g-3">
+          {% for item in plan_suggestions %}
+          <div class="col-lg-4 col-md-6">
+            <button
+              type="button"
+              class="plan-suggestion-card js-plan-suggestion"
+              data-days="{{ item.days }}"
+              data-goal="{{ item.goal }}"
+              data-style="{{ item.style }}"
+              data-daily-time="{{ item.daily_time }}"
+              data-level="{{ item.level }}"
+              data-notes="{{ item.notes }}">
+              <span class="plan-suggestion-kicker">{{ item.days }} ngày</span>
+              <strong>{{ item.title }}</strong>
+              <span>{{ item.subtitle }}</span>
+            </button>
+          </div>
+          {% endfor %}
+        </div>
+      </div>
+    </div>
+    <div class="col-12 d-flex gap-2 flex-wrap pt-2">
+      <button class="btn btn-primary pulse-soft">Tạo chương trình phù hợp</button>
+      <a href="{{ url_for('student.dashboard') }}" class="btn btn-outline-light">Quay lại</a>
+    </div>
+  </form>
+</div>
+{% endblock %}
+
+{% block extra_scripts %}
+<script>
+(() => {
+  const form = document.getElementById('plan-builder-form');
+  if (!form) return;
+  document.querySelectorAll('.js-plan-suggestion').forEach((button) => {
+    button.addEventListener('click', () => {
+      const setValue = (name, value) => {
+        const field = form.querySelector(`[name="${name}"]`);
+        if (field && value !== undefined) field.value = value;
+      };
+      setValue('plan_days', button.dataset.days);
+      setValue('goal', button.dataset.goal);
+      setValue('style', button.dataset.style);
+      setValue('daily_time', button.dataset.dailyTime);
+      setValue('level', button.dataset.level);
+      setValue('notes', button.dataset.notes);
+      form.submit();
+    });
+  });
+})();
+</script>
+{% endblock %}

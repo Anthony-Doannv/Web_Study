@@ -1,0 +1,104 @@
+{% extends "base.html" %}
+{% block title %}Đăng ký - WEB-AI{% endblock %}
+{% block content %}
+<div class="auth-page-bleed auth-page-refined auth-premium-page">
+  <div class="auth-shell-wide auth-center-wrap">
+    <div class="surface auth-authboard auth-authboard-modern auth-authboard-premium">
+      <div class="auth-main-title auth-main-title-shift auth-main-title-premium">Đăng ký</div>
+      <div class="row g-0 auth-authboard-row auth-authboard-modern-row auth-board-equal-row">
+        <div class="col-lg-5 d-flex">
+          <div class="auth-role-panel auth-role-panel-modern auth-role-panel-register auth-role-panel-premium h-100 w-100">
+            <div class="auth-panel-heading-wrap auth-panel-heading-center">
+              <span class="auth-kicker auth-kicker-center">Lối vào học sinh</span>
+              <div class="auth-panel-heading">Tiện ích nổi bật</div>
+            </div>
+            <div class="auth-feature-grid auth-feature-grid-premium">
+              <div class="auth-feature-card auth-feature-card-premium is-active auth-feature-card-lowered">
+                <span class="role-icon student-role">✨</span>
+                <span class="auth-role-copy auth-role-copy-title-only auth-role-copy-premium">
+                  <strong>AI đồng hành</strong>
+                  <small>Gợi ý nhanh</small>
+                </span>
+              </div>
+              <div class="auth-feature-card auth-feature-card-premium auth-feature-card-lowered">
+                <span class="role-icon student-role">📘</span>
+                <span class="auth-role-copy auth-role-copy-title-only auth-role-copy-premium">
+                  <strong>Trang học tập</strong>
+                  <small>Ôn luyện trực quan</small>
+                </span>
+              </div>
+            </div>
+            <div class="auth-panel-metrics auth-panel-metrics-single">
+              <div class="auth-metric-card auth-metric-card-wide">
+                <span class="auth-metric-value">STUDENT</span>
+                <span class="auth-metric-label">Đăng ký học sinh</span>
+              </div>
+            </div>
+          </div>
+        </div>
+        <div class="col-lg-7 d-flex">
+          <div class="auth-form-wrap auth-form-wrap-modern auth-form-wrap-premium h-100 w-100">
+            <div class="auth-form-top auth-form-title-only auth-form-header-premium auth-form-top-center">
+              <div>
+                <span class="auth-kicker auth-kicker-center">Hồ sơ học sinh</span>
+                <div class="section-title mb-0">Tạo tài khoản</div>
+              </div>
+              
+            </div>
+            <form method="post" class="row g-3 auth-form-clean auth-form-modern" id="registerForm">
+<input type="hidden" name="csrf_token" value="{{ csrf_token() }}">
+              <input type="hidden" name="role" id="registerRoleInput" value="student">
+              <div class="col-12">
+                <label class="form-label" for="full_name">Họ tên</label>
+                <input type="text" id="full_name" name="full_name" class="form-control form-control-lg" value="{{ request.form.get('full_name', '') }}" required>
+              </div>
+              <div class="col-12">
+                <label class="form-label" for="email">Email</label>
+                <input type="email" id="email" name="email" class="form-control form-control-lg" value="{{ request.form.get('email', '') }}" required>
+              </div>
+              <div class="col-12">
+                <label class="form-label" for="password">Mật khẩu</label>
+                <div class="input-group input-group-lg auth-password-group">
+                  <input type="password" id="password" name="password" class="form-control" required>
+                  <button type="button" class="btn btn-outline-light" id="togglePassword" aria-label="Hiện hoặc ẩn mật khẩu">👁</button>
+                </div>
+              </div>
+              <div class="col-md-6">
+                <label class="form-label" for="grade_level">Khối</label>
+                <select class="form-select form-select-lg" id="grade_level" name="grade_level">
+                  {% for grade in range(6,13) %}
+                  <option value="{{ grade }}" {% if request.form.get('grade_level') == grade|string %}selected{% endif %}>Lớp {{ grade }}</option>
+                  {% endfor %}
+                </select>
+              </div>
+              <div class="col-md-6">
+                <label for="class_name" class="form-label">Lớp</label>
+                <input type="text" id="class_name" name="class_name" class="form-control form-control-lg" placeholder="Ví dụ: 10A1" value="{{ request.form.get('class_name', '') }}" required>
+              </div>
+              <div class="col-12 d-grid mt-2">
+                <button class="btn btn-primary btn-lg auth-submit-btn">Đăng ký</button>
+              </div>
+              <div class="col-12 auth-form-note auth-form-note-premium justify-content-between flex-wrap">
+                <span>Đã có tài khoản</span>
+                <a href="{{ url_for('auth.login') }}">Đăng nhập</a>
+              </div>
+            </form>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+{% endblock %}
+{% block extra_scripts %}
+<script>
+(function () {
+  const togglePassword = document.getElementById('togglePassword');
+  const passwordInput = document.getElementById('password');
+  togglePassword.addEventListener('click', () => {
+    const type = passwordInput.getAttribute('type') === 'password' ? 'text' : 'password';
+    passwordInput.setAttribute('type', type);
+  });
+})();
+</script>
+{% endblock %}

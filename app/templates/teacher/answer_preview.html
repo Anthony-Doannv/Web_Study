@@ -1,0 +1,172 @@
+{% extends "base.html" %}
+{% block content %}
+<div class="surface p-4 p-lg-5">
+  <style>
+    .answer-preview-shell {
+      display: grid;
+      gap: 1.25rem;
+    }
+    .answer-preview-hero {
+      display: flex;
+      justify-content: space-between;
+      align-items: flex-start;
+      gap: 1rem;
+      flex-wrap: wrap;
+    }
+    .answer-preview-summary {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(170px, 1fr));
+      gap: .85rem;
+    }
+    .answer-summary-card {
+      border: 1px solid rgba(255,255,255,.08);
+      border-radius: 18px;
+      background: rgba(255,255,255,.03);
+      padding: .9rem 1rem;
+    }
+    .answer-summary-card span {
+      display: block;
+      font-size: .78rem;
+      color: rgba(255,255,255,.62);
+      margin-bottom: .35rem;
+    }
+    .answer-summary-card strong {
+      font-size: 1rem;
+    }
+    .answer-note-box {
+      border-radius: 18px;
+      padding: 1rem 1.1rem;
+      border: 1px solid rgba(106,227,159,.28);
+      background: linear-gradient(135deg, rgba(53,201,138,.15), rgba(53,201,138,.06));
+    }
+    .answer-preview-question {
+      border: 1px solid rgba(255,255,255,.08);
+    }
+    .answer-preview-question .question-top {
+      display: flex;
+      justify-content: space-between;
+      gap: .85rem;
+      align-items: flex-start;
+      flex-wrap: wrap;
+      margin-bottom: 1rem;
+    }
+    .answer-badge-strong {
+      display: inline-flex;
+      align-items: center;
+      gap: .45rem;
+      padding: .48rem .78rem;
+      border-radius: 999px;
+      font-size: .84rem;
+      font-weight: 700;
+      color: #092114;
+      background: linear-gradient(135deg, rgba(106,227,159,.96), rgba(157,242,195,.92));
+      box-shadow: 0 12px 28px rgba(21,94,57,.2);
+    }
+    .teacher-choice-tile {
+      position: relative;
+      align-items: stretch;
+      min-height: 100%;
+    }
+    .teacher-choice-tile.is-correct-preview {
+      background: linear-gradient(135deg, rgba(53,201,138,.18), rgba(53,201,138,.08));
+      border: 2px solid rgba(106,227,159,.8);
+      box-shadow: 0 14px 30px rgba(20,94,57,.16);
+    }
+    .teacher-choice-tile .teacher-answer-flag {
+      position: absolute;
+      top: .8rem;
+      right: .8rem;
+      display: inline-flex;
+      align-items: center;
+      gap: .35rem;
+      padding: .28rem .55rem;
+      border-radius: 999px;
+      font-size: .72rem;
+      font-weight: 700;
+      color: #092114;
+      background: rgba(157,242,195,.96);
+    }
+    .teacher-choice-tile .choice-text {
+      padding-right: 4.2rem;
+    }
+    .teacher-explanation {
+      margin-top: 1rem;
+      padding-top: .9rem;
+      border-top: 1px dashed rgba(255,255,255,.12);
+      color: rgba(255,255,255,.72);
+      font-size: .92rem;
+    }
+    @media (max-width: 767.98px) {
+      .teacher-choice-tile .choice-text { padding-right: 0; }
+      .teacher-choice-tile .teacher-answer-flag {
+        position: static;
+        margin-top: .75rem;
+        width: fit-content;
+      }
+    }
+  </style>
+
+  <div class="answer-preview-shell">
+    <div class="answer-preview-hero">
+      <div>
+        <div class="badge-soft mb-2">{{ label }}</div>
+        <h2 class="fw-bold mb-1">{{ title }}</h2>
+        <div class="text-muted small">Đáp án đúng được lấy trực tiếp từ dữ liệu đang dùng ở phía học sinh và được highlight nổi bật để giáo viên kiểm tra nhanh.</div>
+      </div>
+      <a class="btn btn-outline-light" href="{{ back_url }}">Quay lại</a>
+    </div>
+
+    {% if summary %}
+    <div class="answer-preview-summary">
+      {% if summary.subject %}<div class="answer-summary-card"><span>Môn học</span><strong>{{ summary.subject }}</strong></div>{% endif %}
+      {% if summary.grade_level %}<div class="answer-summary-card"><span>Khối lớp</span><strong>Lớp {{ summary.grade_level }}</strong></div>{% endif %}
+      {% if summary.chapter %}<div class="answer-summary-card"><span>Chương</span><strong>Chương {{ summary.chapter }}</strong></div>{% endif %}
+      {% if summary.test_type %}<div class="answer-summary-card"><span>Phân loại</span><strong>{{ summary.test_type }}</strong></div>{% endif %}
+      {% if summary.total %}<div class="answer-summary-card"><span>Tổng số câu</span><strong>{{ summary.total }} câu</strong></div>{% endif %}
+    </div>
+    {% endif %}
+
+    {% if source_note %}
+    <div class="answer-note-box">
+      <div class="fw-semibold mb-1">Liên kết dữ liệu</div>
+      <div class="small text-muted">{{ source_note }}</div>
+    </div>
+    {% endif %}
+
+    {% if answer_note %}
+    <div class="answer-note-box">
+      <div class="fw-semibold mb-1">Gợi ý đáp án / ghi chú của giáo viên</div>
+      <div class="small" style="white-space: pre-line;">{{ answer_note }}</div>
+    </div>
+    {% endif %}
+
+    {% for q in questions %}
+    <div class="answer-card answer-preview-question p-3 p-lg-4">
+      <div class="question-top">
+        <div>
+          <div class="d-flex flex-wrap gap-2 align-items-center mb-2">
+            <span class="badge-soft">Câu {{ q.index }}</span>
+            <span class="exam-difficulty difficulty-{{ (q.difficulty or 'Trung bình')|lower|replace(' ', '-') }}">{{ q.difficulty or 'Trung bình' }}</span>
+          </div>
+          <h5 class="mb-0">{{ q.question }}</h5>
+        </div>
+        <span class="answer-badge-strong">✓ Đáp án đúng: {{ q.answer }}</span>
+      </div>
+      <div class="option-grid">
+        {% for option in q.options %}
+        {% set choice = ['A','B','C','D'][loop.index0] %}
+        <div class="choice-tile teacher-choice-tile {% if q.answer == choice %}is-correct-preview{% endif %}">
+          <span class="choice-mark">{{ choice }}</span>
+          <span class="choice-text">{{ option }}</span>
+          {% if q.answer == choice %}
+          <span class="teacher-answer-flag">✓ Đúng</span>
+          {% endif %}
+        </div>
+        {% endfor %}
+      </div>
+      {% if q.explanation %}<div class="teacher-explanation">Giải thích ngắn: {{ q.explanation }}</div>{% endif %}
+    </div>
+    {% endfor %}
+  </div>
+</div>
+{% endblock %}

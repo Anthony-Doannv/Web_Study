@@ -1,0 +1,152 @@
+{% extends "base.html" %}
+{% block content %}
+<div class="hero mb-4 fade-up">
+  <div class="badge-soft mb-3">Lộ trình cá nhân hóa</div>
+  <h2 class="fw-bold mb-2">{{ subject.name }} - Lộ trình học tối ưu</h2>
+  <p class="text-muted mb-0">Mỗi ngày được chia rõ mục tiêu, nội dung, bài tập và ghi chú để bạn học dễ hơn.</p>
+</div>
+
+<div class="surface p-4 mb-4 fade-up-2">
+  <div class="card-title-strong mb-3">Thông tin đầu vào</div>
+  <div class="row g-3">
+    <div class="col-md-4"><div class="plan-stat"><span>Môn học</span><strong>{{ plan_input.subject }}</strong></div></div>
+    <div class="col-md-4"><div class="plan-stat"><span>Mục tiêu</span><strong>{{ plan_input.goal }}</strong></div></div>
+    <div class="col-md-4"><div class="plan-stat"><span>Thời lượng</span><strong>{{ plan_input.daily_time }}</strong></div></div>
+    <div class="col-md-4"><div class="plan-stat"><span>Số ngày</span><strong>{{ plan_input.plan_days }} ngày</strong></div></div>
+    <div class="col-md-4"><div class="plan-stat"><span>Chương yếu</span><strong>{{ plan_input.focus_chapter }}</strong></div></div>
+    <div class="col-md-4"><div class="plan-stat"><span>Mức độ</span><strong>{{ plan_input.level }}</strong></div></div>
+    <div class="col-md-4"><div class="plan-stat"><span>Phong cách</span><strong>{{ plan_input.style }}</strong></div></div>
+  </div>
+</div>
+
+<div class="fade-up-3">
+  {% for day in plan_days %}
+  <div class="plan-master-card mb-4">
+    <div class="plan-master-head">
+      <div>
+        <div class="plan-day-kicker">{{ day.title }}</div>
+        <h3 class="plan-day-title plan-clean-text">{{ day.headline or "Lộ trình học tập" }}</h3>
+      </div>
+      {% if day.duration %}
+      <div class="plan-time-pill plan-clean-text">{{ day.duration }}</div>
+      {% endif %}
+    </div>
+
+    {% if day.goal %}
+    <div class="plan-goal-box mb-3">
+      <div class="plan-section-label">Mục tiêu</div>
+      <div class="plan-clean-text">{{ day.goal }}</div>
+    </div>
+    {% endif %}
+
+    <div class="row g-3">
+      <div class="col-lg-7">
+        <div class="plan-section-card h-100">
+          <div class="plan-section-label">Nội dung cần học</div>
+          {% if day.content_items %}
+            <ul class="plan-list mb-0">
+              {% for item in day.content_items %}
+              <li class="plan-clean-text">{{ item }}</li>
+              {% endfor %}
+            </ul>
+          {% else %}
+            <div class="text-muted">Chưa có nội dung.</div>
+          {% endif %}
+        </div>
+      </div>
+
+      <div class="col-lg-5">
+        <div class="plan-section-card h-100">
+          <div class="plan-section-label">Bài tập / luyện tập</div>
+          {% if day.exercise_items %}
+            <ul class="plan-list mb-0">
+              {% for item in day.exercise_items %}
+              <li class="plan-clean-text">{{ item }}</li>
+              {% endfor %}
+            </ul>
+          {% else %}
+            <div class="text-muted">Chưa có bài tập riêng.</div>
+          {% endif %}
+        </div>
+      </div>
+    </div>
+
+    {% if day.note_items %}
+    <div class="plan-note-card mt-3">
+      <div class="plan-section-label">Ghi chú</div>
+      <ul class="plan-list mb-0">
+        {% for item in day.note_items %}
+        <li class="plan-clean-text">{{ item }}</li>
+        {% endfor %}
+      </ul>
+    </div>
+    {% endif %}
+  </div>
+  {% endfor %}
+</div>
+
+<div class="surface p-4 fade-up-3">
+  <div class="d-flex justify-content-between align-items-center flex-wrap gap-2 mb-3">
+    <div class="card-title-strong">Nội dung đã customize</div>
+    <a class="btn btn-outline-light btn-sm" href="{{ url_for('student.plan_builder') }}">Tạo lại lộ trình</a>
+  </div>
+  <div class="row g-3">
+    {% for item in customized_items %}
+    <div class="col-md-6">
+      <div class="plan-resource-card">
+        <div>
+          <div class="small text-muted mb-1">{{ item.label }}</div>
+          <div class="fw-bold">{{ item.title }}</div>
+        </div>
+        <a class="btn btn-primary btn-sm mt-3" href="{{ item.url }}">Mở ngay</a>
+      </div>
+    </div>
+    {% endfor %}
+  </div>
+</div>
+{% endblock %}
+
+{% block extra_scripts %}
+<script>
+(() => {
+  const cleanPlanText = (value, isListItem = false) => {
+    let text = value || "";
+
+    text = text.replace(/\$x\^2 = 9\$/g, "x² = 9");
+    text = text.replace(/\$x\^2\$/g, "x²");
+    text = text.replace(/\$x_1\+x_2 = 5\$/g, "x₁ + x₂ = 5");
+    text = text.replace(/\$x_1, x_2\$/g, "x₁, x₂");
+    text = text.replace(/\$\\Delta\$/g, "Δ");
+    text = text.replace(/\$\\mathbb\{N\}\$/g, "N");
+    text = text.replace(/\$\\mathbb\{Z\}\$/g, "Z");
+    text = text.replace(/\$\\mathbb\{Q\}\$/g, "Q");
+    text = text.replace(/\$\\mathbb\{R\}\$/g, "R");
+    text = text.replace(/\\subseteq/g, "⊆");
+    text = text.replace(/\\in/g, "∈");
+    text = text.replace(/\\le/g, "≤");
+    text = text.replace(/\\ge/g, "≥");
+    text = text.replace(/\\times/g, "×");
+    text = text.replace(/\\frac\{([^{}]+)\}\{([^{}]+)\}/g, "($1)/($2)");
+    text = text.replace(/\\\(/g, "");
+    text = text.replace(/\\\)/g, "");
+    text = text.replace(/\$/g, "");
+    text = text.replace(/[{}]/g, "");
+
+    text = text.trim();
+
+    if (isListItem) {
+      text = text.replace(/^\s*(?:[•*\-–—]+|\d+[.)]|[a-zA-Z][.)])\s*/u, "");
+      text = text.trim();
+    }
+
+    text = text.replace(/\s{2,}/g, " ");
+    return text;
+  };
+
+  document.querySelectorAll('.plan-clean-text').forEach((el) => {
+    const isListItem = el.tagName === 'LI';
+    el.textContent = cleanPlanText(el.textContent, isListItem);
+  });
+})();
+</script>
+{% endblock %}

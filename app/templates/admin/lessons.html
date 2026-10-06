@@ -1,0 +1,57 @@
+{% extends "base.html" %}
+{% block content %}
+<div class="teacher-shell">
+  {% set active = "lessons" %}
+  {% include "_partials/admin_sidebar.html" %}
+  <main>
+    <div class="page-header-card mb-4">
+      <div class="header-copy">
+        <h2 class="page-title mb-1">Quản lý bài học</h2>
+        <p class="text-muted mb-0">Dùng bộ lọc theo môn và khối lớp để kiểm soát nội dung học tập một cách gọn gàng hơn.</p>
+      </div>
+      <div class="page-header-actions">
+        <a href="{{ url_for('admin.dashboard') }}" class="btn btn-outline-light">Về trang quản trị</a>
+      </div>
+    </div>
+<div class="surface p-4">
+  <form class="row g-3 mb-4">
+    <div class="col-md-4">
+      <select class="form-select" name="subject_id">
+        <option value="">-- Lọc theo môn --</option>
+        {% for s in subjects %}
+          <option value="{{ s.id }}" {% if subject_id == s.id %}selected{% endif %}>{{ s.name }}</option>
+        {% endfor %}
+      </select>
+    </div>
+    <div class="col-md-3">
+      <select class="form-select" name="grade_level">
+        <option value="">-- Lọc theo lớp --</option>
+        {% for g in grade_levels %}
+          <option value="{{ g }}" {% if grade_level == g %}selected{% endif %}>Lớp {{ g }}</option>
+        {% endfor %}
+      </select>
+    </div>
+    <div class="col-md-2"><button class="btn btn-outline-light w-100">Lọc</button></div>
+    <div class="col-md-3 text-md-end"><a href="{{ url_for('admin.create_lesson') }}" class="btn btn-primary">+ Thêm bài học</a></div>
+  </form>
+  <div class="table-responsive">
+    <table class="table">
+      <thead><tr><th>Tiêu đề</th><th>Lớp</th><th>Chương</th><th>Môn</th><th>Thao tác</th></tr></thead>
+      <tbody>
+      {% for item in items %}
+        <tr>
+          <td>{{ item.title }}</td><td>{{ item.grade_level }}</td><td>{{ item.chapter }}</td><td>{{ item.subject.name }}</td>
+          <td class="d-flex gap-2">
+            <a class="btn btn-warning btn-sm" href="{{ url_for('admin.edit_lesson', item_id=item.id) }}">Sửa</a>
+            <form method="post" action="{{ url_for('admin.delete_lesson', item_id=item.id) }}">
+<input type="hidden" name="csrf_token" value="{{ csrf_token() }}"><button class="btn btn-danger btn-sm">Xóa</button></form>
+          </td>
+        </tr>
+      {% endfor %}
+      </tbody>
+    </table>
+  </div>
+</div>
+  </main>
+</div>
+{% endblock %}

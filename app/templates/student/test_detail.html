@@ -1,0 +1,87 @@
+{% extends "base.html" %}
+{% block content %}
+<div class="exam-shell">
+  <aside class="exam-sidebar">
+    <div class="exam-sidebar-card">
+      <div class="badge-soft mb-3">Bài kiểm tra</div>
+      <h2 class="fw-bold mb-2">{{ test.title }}</h2>
+      <p class="text-muted small mb-3">{{ test.instructions }}</p>
+      <div class="exam-meta-list">
+        <div class="exam-meta-item"><span>Số câu</span><strong>{{ total_questions or questions|length }}</strong></div>
+        <div class="exam-meta-item"><span>Thời gian</span><strong>60 phút</strong></div>
+      </div>
+      <div class="exam-timer mt-3" data-duration="{{ duration_minutes or 60 }}">60:00</div>
+      <div class="exam-progress small mt-3"><span id="answered-count">0</span>/{{ total_questions or questions|length }} câu đã chọn</div>
+      <div class="question-nav-grid mt-3">
+        {% for q in questions %}
+        <a href="#question-{{ loop.index }}" class="question-nav-item" data-question-nav="{{ loop.index0 }}">{{ loop.index }}</a>
+        {% endfor %}
+      </div>
+      <button class="btn btn-primary w-100 mt-3" type="submit" form="exam-form">Nộp bài kiểm tra</button>
+    </div>
+  </aside>
+
+  <section class="exam-main">
+    <form method="post" id="exam-form">
+<input type="hidden" name="csrf_token" value="{{ csrf_token() }}">
+      {% for q in questions %}
+      {% set q_index = loop.index0 %}
+      <article class="exam-question-card" id="question-{{ loop.index }}" data-question-card="{{ q_index }}">
+        <div class="exam-question-top">
+          <div class="exam-order">Câu {{ loop.index }}</div>
+        </div>
+        <h4 class="exam-question-title">{{ q.question }}</h4>
+        <div class="option-grid">
+          {% for option in q.options %}
+          {% set choice = ['A','B','C','D'][loop.index0] %}
+          <label class="choice-tile" for="test_{{ q_index }}_{{ choice }}">
+            <input id="test_{{ q_index }}_{{ choice }}" class="choice-input" type="radio" name="q_{{ q_index }}" value="{{ choice }}">
+            <span class="choice-mark">{{ choice }}</span>
+            <span class="choice-text">{{ option }}</span>
+          </label>
+          {% endfor %}
+        </div>
+      </article>
+      {% endfor %}
+    </form>
+  </section>
+</div>
+
+<script>
+(() => {
+  const form = document.getElementById('exam-form');
+  const navItems = Array.from(document.querySelectorAll('[data-question-nav]'));
+  const answeredCountEl = document.getElementById('answered-count');
+  function updateProgress() {
+    let answered = 0;
+    navItems.forEach((item) => {
+      const idx = item.dataset.questionNav;
+      const checked = form.querySelector(`input[name="q_${idx}"]:checked`);
+      item.classList.toggle('is-answered', !!checked);
+      if (checked) answered += 1;
+    });
+    if (answeredCountEl) answeredCountEl.textContent = answered;
+  }
+  form.addEventListener('change', updateProgress);
+  updateProgress();
+
+  const timer = document.querySelector('.exam-timer');
+  if (timer) {
+    let seconds = Number(timer.dataset.duration || 60) * 60;
+    const tick = () => {
+      const m = String(Math.floor(seconds / 60)).padStart(2, '0');
+      const s = String(seconds % 60).padStart(2, '0');
+      timer.textContent = `${m}:${s}`;
+      timer.classList.toggle('is-warning', seconds <= 300);
+      if (seconds <= 0) {
+        form.submit();
+        return;
+      }
+      seconds -= 1;
+    };
+    tick();
+    setInterval(tick, 1000);
+  }
+})();
+</script>
+{% endblock %}

@@ -1,0 +1,154 @@
+{% extends "base.html" %}
+{% block content %}
+<div class="surface p-4 p-lg-5">
+  <div class="badge-soft mb-3">Bài học</div>
+
+  {% set clean_title = lesson.title[:-2] if lesson.title and lesson.title.endswith(' 1') else lesson.title %}
+  <h2 class="lesson-chapter-title mb-4">{{ clean_title }}</h2>
+
+  <div class="lesson-goal-wrap mb-4">
+    <div class="lesson-mini-card">
+      <h4>📌 Mục tiêu học tập</h4>
+
+      <div class="lesson-goal-grid">
+
+        {# ===== TOÁN ===== #}
+        {% if 'Toán' in lesson.title %}
+          <div class="lesson-goal-item">
+            <div class="lesson-goal-item-title">Phần 1. Mục tiêu học tập</div>
+            <ul class="lesson-goal-list">
+              <li>Nắm được nội dung cốt lõi của chủ đề Ứng dụng đạo hàm.</li>
+              <li>Hiểu cách khảo sát và vẽ đồ thị hàm số.</li>
+              <li>Biết trình bày các ý chính liên quan đến khái niệm, quy tắc và tính chất.</li>
+            </ul>
+          </div>
+
+          <div class="lesson-goal-item">
+            <div class="lesson-goal-item-title">Phần 2. Nội dung trọng tâm</div>
+            <ul class="lesson-goal-list">
+              <li>Biết vận dụng kiến thức vào câu hỏi cơ bản và bài tập ngắn.</li>
+              <li>Khái quát chủ đề: Ứng dụng đạo hàm để khảo sát và vẽ đồ thị hàm số.</li>
+              <li>Làm rõ các điểm cần nhớ về khái niệm và quy tắc.</li>
+            </ul>
+          </div>
+
+          <div class="lesson-goal-item">
+            <div class="lesson-goal-item-title">Phần 3. Luyện tập</div>
+            <ul class="lesson-goal-list">
+              <li>Phân biệt đúng sai, nhận diện lỗi thường gặp trong phần tính chất.</li>
+              <li>Gắn chủ đề với ví dụ trong học tập hoặc đời sống.</li>
+              <li>Xem một ví dụ mẫu có lời giải hoặc hướng dẫn ngắn.</li>
+            </ul>
+          </div>
+
+          <div class="lesson-goal-item">
+            <div class="lesson-goal-item-title">Phần 4. Ghi nhớ</div>
+            <ul class="lesson-goal-list">
+              <li>Ghi lại 3 từ khóa hoặc ý chính quan trọng nhất.</li>
+              <li>Tự giải thích lại bằng lời của mình để kiểm tra mức độ hiểu bài.</li>
+              <li>Học theo sơ đồ hoặc gạch đầu dòng, làm bài từ mức nhận biết đến vận dụng.</li>
+              <li>So sánh với các bài/chủ đề gần giống để tránh nhầm lẫn.</li>
+            </ul>
+          </div>
+
+        {# ===== NGỮ VĂN ===== #}
+        {% elif 'Ngữ văn' in lesson.title %}
+          <div class="lesson-goal-item">
+            <div class="lesson-goal-item-title">Phần 1. Mục tiêu học tập</div>
+            <ul class="lesson-goal-list">
+              <li>Nắm được nội dung cốt lõi của chủ đề Văn học Việt Nam hiện đại.</li>
+              <li>Biết trình bày rõ các ý chính liên quan đến đọc hiểu, nghệ thuật và nội dung.</li>
+              <li>Biết vận dụng kiến thức vào câu hỏi cơ bản và bài tập ngắn.</li>
+            </ul>
+          </div>
+
+          <div class="lesson-goal-item">
+            <div class="lesson-goal-item-title">Phần 2. Nội dung trọng tâm</div>
+            <ul class="lesson-goal-list">
+              <li>Khái quát chủ đề: Văn học Việt Nam hiện đại.</li>
+              <li>Làm rõ các điểm cần nhớ về đọc hiểu và nghệ thuật.</li>
+              <li>Phân biệt đúng sai, nhận diện lỗi thường gặp trong phần nội dung.</li>
+              <li>Gắn chủ đề với thông điệp trong học tập hoặc đời sống.</li>
+            </ul>
+          </div>
+
+          <div class="lesson-goal-item">
+            <div class="lesson-goal-item-title">Phần 3. Ví dụ và định hướng luyện tập</div>
+            <ul class="lesson-goal-list">
+              <li>Xem một ví dụ mẫu có lời giải hoặc hướng dẫn ngắn.</li>
+              <li>Ghi lại 3 từ khóa hoặc ý chính quan trọng nhất.</li>
+              <li>Tự giải thích lại bằng lời của mình để kiểm tra mức độ hiểu bài.</li>
+            </ul>
+          </div>
+
+          <div class="lesson-goal-item">
+            <div class="lesson-goal-item-title">Phần 4. Ghi nhớ nhanh</div>
+            <ul class="lesson-goal-list">
+              <li>Học theo sơ đồ hoặc gạch đầu dòng.</li>
+              <li>Làm bài từ mức nhận biết đến vận dụng.</li>
+              <li>So sánh với các bài/chủ đề gần giống để tránh nhầm lẫn.</li>
+            </ul>
+          </div>
+
+        {# ===== TIẾNG ANH ===== #}
+        {% elif 'Tiếng Anh' in lesson.title %}
+          <div class="lesson-goal-item">
+            <div class="lesson-goal-item-title">Phần 1. Mục tiêu học tập</div>
+            <ul class="lesson-goal-list">
+              <li>Nắm được từ vựng và cấu trúc ngữ pháp trọng tâm của bài học.</li>
+              <li>Hiểu cách áp dụng vào bài đọc, bài viết và câu hỏi cơ bản.</li>
+              <li>Rèn khả năng nhận diện lỗi thường gặp khi dùng tiếng Anh.</li>
+            </ul>
+          </div>
+
+          <div class="lesson-goal-item">
+            <div class="lesson-goal-item-title">Phần 2. Nội dung trọng tâm</div>
+            <ul class="lesson-goal-list">
+              <li>Từ vựng chủ đề và mẫu câu quan trọng.</li>
+              <li>Ngữ pháp cốt lõi cần ghi nhớ.</li>
+              <li>Cách dùng trong ngữ cảnh thực tế.</li>
+            </ul>
+          </div>
+
+          <div class="lesson-goal-item">
+            <div class="lesson-goal-item-title">Phần 3. Luyện tập</div>
+            <ul class="lesson-goal-list">
+              <li>Làm câu hỏi chọn đáp án đúng theo ngữ cảnh.</li>
+              <li>Viết lại câu hoặc hoàn thành câu ngắn.</li>
+              <li>Luyện đọc hiểu với đoạn văn ngắn.</li>
+            </ul>
+          </div>
+
+          <div class="lesson-goal-item">
+            <div class="lesson-goal-item-title">Phần 4. Ghi nhớ</div>
+            <ul class="lesson-goal-list">
+              <li>Ghi lại từ khóa và cấu trúc quan trọng.</li>
+              <li>Ôn theo nhóm chủ đề để nhớ lâu hơn.</li>
+              <li>So sánh với mẫu câu gần giống để tránh nhầm.</li>
+            </ul>
+          </div>
+
+        {# ===== FALLBACK ===== #}
+        {% else %}
+          <div class="lesson-goal-item">
+            <div class="lesson-goal-item-title">Nội dung bài học</div>
+            <ul class="lesson-goal-list">
+              {% for line in (lesson.content or '').split('.') %}
+                {% set x = line.strip() %}
+                {% if x %}
+                <li>{{ x }}</li>
+                {% endif %}
+              {% endfor %}
+            </ul>
+          </div>
+        {% endif %}
+
+      </div>
+    </div>
+  </div>
+
+  <a href="{{ url_for('student.subject_detail', subject_id=lesson.subject_id) }}" class="btn btn-primary">
+    Quay lại
+  </a>
+</div>
+{% endblock %}

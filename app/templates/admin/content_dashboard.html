@@ -1,0 +1,67 @@
+{% extends "base.html" %}
+{% block content %}
+<div class="admin-shell">
+  <aside class="admin-sidebar">
+    <div class="brand d-flex align-items-center"><span class="brand-mark">AI</span>EduAI Admin</div>
+    <div class="text-muted mb-3">Quản trị nội dung</div>
+    <nav class="admin-menu">
+      <a href="{{ url_for('admin.dashboard') }}"><span class="soft-icon">🏠</span> Trang quản trị</a>
+      <a href="{{ url_for('admin.students') }}"><span class="soft-icon">👨‍🎓</span> Quản lý học sinh</a>
+      <a class="active" href="{{ url_for('admin.content_dashboard') }}"><span class="soft-icon">📚</span> Nội dung học tập</a>
+      <a href="{{ url_for('admin.lessons') }}"><span class="soft-icon">📝</span> Bài học</a>
+      <a href="{{ url_for('admin.exercises') }}"><span class="soft-icon">✏️</span> Bài tập</a>
+      <a href="{{ url_for('admin.tests') }}"><span class="soft-icon">📋</span> Bài kiểm tra</a>
+      <a href="{{ url_for('admin.reports') }}"><span class="soft-icon">📊</span> Báo cáo</a>
+      <a href="{{ url_for('admin.support') }}"><span class="soft-icon">🛟</span> Hỗ trợ</a>
+    </nav>
+  </aside>
+
+  <main>
+    <div class="admin-main-top">
+      <div>
+        <div class="badge-soft mb-2">Nội dung học tập</div>
+        <h2 class="fw-bold mb-1">Quản lý bài học, bài tập và bài kiểm tra</h2>
+        <div class="text-muted">Các khối nội dung được phân tách rõ, dễ thao tác và phù hợp khi demo đồ án.</div>
+      </div>
+      <div class="d-flex gap-2 flex-wrap">
+        <a class="btn btn-primary" href="{{ url_for('admin.lessons') }}">Bài học</a>
+        <a class="btn btn-outline-light" href="{{ url_for('admin.exercises') }}">Bài tập</a>
+        <a class="btn btn-outline-light" href="{{ url_for('admin.tests') }}">Bài kiểm tra</a>
+      </div>
+    </div>
+
+    <div class="row g-4">
+      <div class="col-lg-4">
+        <div class="content-tile">
+          <div class="card-title-strong mb-3">Bài học gần đây</div>
+          <div class="list-group">
+            {% for item in lessons %}
+              <div class="list-group-item">{{ item.title }}</div>
+            {% endfor %}
+          </div>
+        </div>
+      </div>
+      <div class="col-lg-4">
+        <div class="content-tile">
+          <div class="card-title-strong mb-3">Bài tập gần đây</div>
+          <div class="list-group">
+            {% for item in exercises %}
+              <div class="list-group-item">{{ item.title }}</div>
+            {% endfor %}
+          </div>
+        </div>
+      </div>
+      <div class="col-lg-4">
+        <div class="content-tile">
+          <div class="card-title-strong mb-3">Bài kiểm tra gần đây</div>
+          <div class="list-group">
+            {% for item in tests %}
+              <div class="list-group-item">{{ item.title }}</div>
+            {% endfor %}
+          </div>
+        </div>
+      </div>
+    </div>
+  </main>
+</div>
+{% endblock %}

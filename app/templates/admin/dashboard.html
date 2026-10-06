@@ -1,0 +1,73 @@
+{% extends "base.html" %}
+{% block content %}
+<div class="teacher-shell">
+  {% set active = 'dashboard' %}
+  {% include '_partials/admin_sidebar.html' %}
+  <main>
+    <div class="page-header-card mb-4">
+      <div>
+        <div class="badge-soft mb-3"><span class="glow-dot"></span> Quyền cao nhất của hệ thống</div>
+        <h2 class="page-title mb-1">Admin hệ thống</h2>
+        <p class="text-muted mb-0">Admin quản lý người dùng, phân quyền, môn học, khu hệ thống và theo dõi các yêu cầu hỗ trợ gửi về bộ phận quản trị hệ thống.</p>
+      </div>
+    </div>
+
+    <div class="row g-3 mb-4">
+      {% for label, value in stats.items() %}
+      <div class="col-md-6 col-xl-4">
+        <div class="metric-card">
+          <div class="text-muted">{{ label }}</div>
+          <div class="big mt-2">{{ value }}</div>
+        </div>
+      </div>
+      {% endfor %}
+    </div>
+
+    <div class="row g-4">
+      <div class="col-lg-7">
+        <div class="surface p-4 h-100">
+          <div class="d-flex justify-content-between align-items-center flex-wrap gap-2 mb-3">
+            <div class="section-title mb-0">Tài khoản gần đây</div>
+            <a class="btn btn-primary btn-sm" href="{{ url_for('admin.accounts') }}">Quản lý người dùng</a>
+          </div>
+          <div class="table-responsive">
+            <table class="table table-aligned">
+              <thead><tr><th>Họ tên</th><th>Email</th><th>Vai trò</th></tr></thead>
+              <tbody>
+                {% for account in recent_accounts %}
+                <tr>
+                  <td class="fw-semibold">{{ account.full_name }}</td>
+                  <td>{{ account.email }}</td>
+                  <td><span class="badge bg-info text-dark">{{ account.role }}</span></td>
+                </tr>
+                {% endfor %}
+              </tbody>
+            </table>
+          </div>
+        </div>
+      </div>
+      <div class="col-lg-5">
+        <div class="surface p-4 h-100">
+          <div class="section-title mb-3">Thống kê nội dung</div>
+          <div class="list-group mb-4">
+            {% for label, value in content_stats.items() %}
+            <div class="list-group-item d-flex justify-content-between"><span>{{ label }}</span><strong>{{ value }}</strong></div>
+            {% endfor %}
+          </div>
+          <div class="section-title mb-3">Hỗ trợ gửi admin đang mở</div>
+          <div class="list-group">
+            {% for item in pending_support %}
+            <div class="list-group-item">
+              <strong>{{ item.title }}</strong><br>
+              <span class="text-muted small">{{ status_labels.get(item.status, item.status) }}</span>
+            </div>
+            {% else %}
+            <div class="list-group-item">Không có yêu cầu đang mở.</div>
+            {% endfor %}
+          </div>
+        </div>
+      </div>
+    </div>
+  </main>
+</div>
+{% endblock %}

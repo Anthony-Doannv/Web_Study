@@ -1,0 +1,59 @@
+{% extends "base.html" %}
+{% block content %}
+<div class="teacher-shell">
+  {% set active = 'system' %}
+  {% include '_partials/admin_sidebar.html' %}
+  <main>
+    <div class="page-header-card mb-4">
+      <div>
+        <h2 class="page-title mb-1">Quản lý hệ thống</h2>
+        <p class="text-muted mb-0">Khu vực này dành cho admin dọn dữ liệu vận hành, làm sạch lịch sử và kiểm soát các phần dữ liệu lớn trong hệ thống.</p>
+      </div>
+    </div>
+
+    <div class="row g-3 mb-4">
+      {% for label, value in system_stats.items() %}
+      <div class="col-md-6 col-xl-4">
+        <div class="metric-card">
+          <div class="text-muted">{{ label }}</div>
+          <div class="big mt-2">{{ value }}</div>
+        </div>
+      </div>
+      {% endfor %}
+    </div>
+
+    <div class="row g-4">
+      <div class="col-lg-4">
+        <div class="surface p-4 h-100 system-action-card">
+          <div class="section-title mb-2">Xóa lịch sử chat AI</div>
+          <p class="text-muted mb-3">Dọn toàn bộ hội thoại AI của học viên trên hệ thống.</p>
+          <form method="post" action="{{ url_for('admin.clear_all_ai_chat') }}" onsubmit="return confirm('Xóa toàn bộ lịch sử chat AI trên hệ thống?');">
+<input type="hidden" name="csrf_token" value="{{ csrf_token() }}">
+            <button class="btn btn-outline-light w-100">Xóa lịch sử chat</button>
+          </form>
+        </div>
+      </div>
+      <div class="col-lg-4">
+        <div class="surface p-4 h-100 system-action-card">
+          <div class="section-title mb-2">Xóa lịch sử yêu cầu</div>
+          <p class="text-muted mb-3">Xóa toàn bộ yêu cầu hỗ trợ của học viên và phản hồi đi kèm.</p>
+          <form method="post" action="{{ url_for('admin.clear_all_support_requests') }}" onsubmit="return confirm('Xóa toàn bộ yêu cầu hỗ trợ trên hệ thống?');">
+<input type="hidden" name="csrf_token" value="{{ csrf_token() }}">
+            <button class="btn btn-outline-light w-100">Xóa lịch sử yêu cầu</button>
+          </form>
+        </div>
+      </div>
+      <div class="col-lg-4">
+        <div class="surface p-4 h-100 system-action-card">
+          <div class="section-title mb-2">Xóa lượt nộp bài</div>
+          <p class="text-muted mb-3">Dọn dữ liệu kết quả học tập đã nộp để làm sạch hệ thống khi cần.</p>
+          <form method="post" action="{{ url_for('admin.clear_all_submissions') }}" onsubmit="return confirm('Xóa toàn bộ lượt nộp bài và kết quả?');">
+<input type="hidden" name="csrf_token" value="{{ csrf_token() }}">
+            <button class="btn btn-outline-light w-100">Xóa dữ liệu kết quả</button>
+          </form>
+        </div>
+      </div>
+    </div>
+  </main>
+</div>
+{% endblock %}

@@ -1,0 +1,93 @@
+{% extends "base.html" %}
+{% block content %}
+<div class="surface p-4 p-lg-5">
+  <div class="d-flex justify-content-between align-items-start gap-3 flex-wrap mb-4">
+    <div>
+      <div class="badge-soft mb-3">Bài học · Chế độ sửa</div>
+      <h2 class="lesson-chapter-title mb-2">{{ item.title }}</h2>
+      <p class="text-muted mb-0">Trang sửa bám gần hơn với giao diện học viên: bên trái là phần nhập nội dung, bên phải là khung xem nhanh theo kiểu bài học mà học viên nhìn thấy.</p>
+    </div>
+    <a href="{{ url_for('teacher.lessons') }}" class="btn btn-outline-light">Quay lại</a>
+  </div>
+
+  <form method="post" id="lesson-edit-form" class="row g-4">
+<input type="hidden" name="csrf_token" value="{{ csrf_token() }}">
+    <div class="col-lg-5">
+      <div class="answer-card p-3 p-lg-4 h-100">
+        <div class="row g-3">
+          <div class="col-12"><label class="form-label">Tiêu đề</label><input class="form-control" name="title" value="{{ item.title }}" required></div>
+          <div class="col-md-6"><label class="form-label">Lớp</label><input class="form-control" type="number" name="grade_level" value="{{ item.grade_level }}" required></div>
+          <div class="col-md-6"><label class="form-label">Chương</label><input class="form-control" type="number" name="chapter" value="{{ item.chapter }}" required></div>
+          <div class="col-12"><label class="form-label">Môn</label>
+            <select class="form-select" name="subject_id" required>
+              {% for s in subjects %}
+                <option value="{{ s.id }}" {% if item.subject_id == s.id %}selected{% endif %}>{{ s.name }}</option>
+              {% endfor %}
+            </select>
+          </div>
+          <div class="col-12">
+            <label class="form-label">Nội dung bài học</label>
+            <textarea class="form-control" rows="16" name="content" id="lesson-content-input" required>{{ item.content }}</textarea>
+            <div class="form-text text-light-emphasis mt-2">Mỗi dòng hoặc mỗi câu sẽ được tách ra để xem nhanh giống kiểu danh sách nội dung ở phía học viên.</div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <div class="col-lg-7">
+      <div class="lesson-goal-wrap mb-0">
+        <div class="lesson-mini-card">
+          <h4>👀 Xem nhanh kiểu học viên</h4>
+          <div class="lesson-goal-grid">
+            <div class="lesson-goal-item">
+              <div class="lesson-goal-item-title">Nội dung bài học</div>
+              <ul class="lesson-goal-list mb-0" id="lesson-preview-list">
+                {% for line in preview_lines %}
+                  <li>{{ line }}</li>
+                {% else %}
+                  <li>Nội dung bài học sẽ hiển thị ở đây sau khi nhập.</li>
+                {% endfor %}
+              </ul>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <div class="col-12 d-flex gap-2 flex-wrap mt-1">
+      <button class="btn btn-primary">Lưu bài học</button>
+      <a class="btn btn-outline-light" href="{{ url_for('teacher.lessons') }}">Hủy</a>
+    </div>
+  </form>
+</div>
+
+<script>
+(() => {
+  const input = document.getElementById('lesson-content-input');
+  const preview = document.getElementById('lesson-preview-list');
+  if (!input || !preview) return;
+
+  function renderPreview() {
+    const raw = input.value || '';
+    const parts = raw
+      .split(/\n+|\.\s+/)
+      .map((item) => item.trim())
+      .filter(Boolean)
+      .slice(0, 16);
+    preview.innerHTML = '';
+    if (!parts.length) {
+      preview.innerHTML = '<li>Nội dung bài học sẽ hiển thị ở đây sau khi nhập.</li>';
+      return;
+    }
+    parts.forEach((part) => {
+      const li = document.createElement('li');
+      li.textContent = part;
+      preview.appendChild(li);
+    });
+  }
+
+  input.addEventListener('input', renderPreview);
+  renderPreview();
+})();
+</script>
+{% endblock %}

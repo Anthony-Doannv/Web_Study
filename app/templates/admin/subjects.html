@@ -1,0 +1,50 @@
+{% extends "base.html" %}
+{% block content %}
+<div class="teacher-shell">
+  {% set active = 'subjects' %}
+  {% include '_partials/admin_sidebar.html' %}
+  <main>
+    <div class="page-header-card mb-4">
+      <div>
+        <h2 class="page-title mb-1">Quản lý môn học</h2>
+        <p class="text-muted mb-0">Gộp phần thêm và chỉnh sửa môn học trên cùng một hàng để admin thao tác nhanh hơn và đồng bộ hơn.</p>
+      </div>
+    </div>
+
+    <div class="surface p-4">
+      <div class="section-title mb-3">Thêm / sửa môn học trên cùng một dòng</div>
+      <div class="subject-admin-list d-flex flex-column gap-3">
+        <form method="post" action="{{ url_for('admin.create_subject') }}" class="subject-row subject-row-create">
+<input type="hidden" name="csrf_token" value="{{ csrf_token() }}">
+          <div class="subject-row-id"><span class="badge bg-primary">Mới</span></div>
+          <div class="subject-row-input">
+            <input name="name" class="form-control" placeholder="Nhập tên môn học mới">
+          </div>
+          <div class="subject-row-actions">
+            <button class="btn btn-primary">Thêm môn học</button>
+          </div>
+        </form>
+
+        {% for item in subjects %}
+        <div class="subject-row-wrap">
+          <form method="post" action="{{ url_for('admin.edit_subject', item_id=item.id) }}" class="subject-row">
+<input type="hidden" name="csrf_token" value="{{ csrf_token() }}">
+            <div class="subject-row-id">#{{ item.id }}</div>
+            <div class="subject-row-input">
+              <input name="name" class="form-control" value="{{ item.name }}">
+            </div>
+            <div class="subject-row-actions">
+              <button class="btn btn-warning">Lưu chỉnh sửa</button>
+            </div>
+          </form>
+          <form method="post" action="{{ url_for('admin.delete_subject', item_id=item.id) }}" onsubmit="return confirm('Xóa môn học này?');" class="subject-delete-form">
+<input type="hidden" name="csrf_token" value="{{ csrf_token() }}">
+            <button class="btn btn-danger">Xóa</button>
+          </form>
+        </div>
+        {% endfor %}
+      </div>
+    </div>
+  </main>
+</div>
+{% endblock %}

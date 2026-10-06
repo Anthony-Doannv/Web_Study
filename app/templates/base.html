@@ -1,0 +1,166 @@
+<!doctype html>
+<html lang="vi">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+<meta name="theme-color" content="#10383f">
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <title>{% block title %}EduAI{% endblock %}</title>
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css" rel="stylesheet">
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.3/font/bootstrap-icons.min.css" rel="stylesheet">
+    <link href="{{ url_for('static', filename='css/style.css') }}" rel="stylesheet">
+</head>
+<body>
+<nav class="navbar navbar-expand-lg sticky-top">
+  <div class="container py-2">
+    <a class="navbar-brand text-white fw-bold d-flex align-items-center" href="{{ url_for('main.home') }}">
+      <span class="brand-mark brand-mark-logo">◉</span>
+      <span>EduAI</span>
+    </a>
+    <button class="navbar-toggler btn btn-outline-light" type="button" data-bs-toggle="collapse" data-bs-target="#navMain">
+      Menu
+    </button>
+    <div class="collapse navbar-collapse" id="navMain">
+      <ul class="navbar-nav ms-auto align-items-lg-center gap-2">
+        {% if current_user.is_authenticated %}
+            {% if current_user.role == 'admin' %}
+                <li class="nav-item"><a class="nav-link text-white {% if request.endpoint == 'admin.dashboard' %}active-nav{% endif %}" href="{{ url_for('admin.dashboard') }}">Trang quản trị</a></li>
+                <li class="nav-item"><a class="nav-link text-white {% if request.endpoint in ['admin.accounts', 'admin.create_account', 'admin.edit_account'] %}active-nav{% endif %}" href="{{ url_for('admin.accounts') }}">Người dùng</a></li>
+                <li class="nav-item"><a class="nav-link text-white {% if request.endpoint in ['admin.subjects', 'admin.create_subject', 'admin.edit_subject'] %}active-nav{% endif %}" href="{{ url_for('admin.subjects') }}">Môn học</a></li>
+                <li class="nav-item"><a class="nav-link text-white {% if request.endpoint in ['admin.system', 'admin.clear_all_ai_chat', 'admin.clear_all_support_requests', 'admin.clear_all_submissions'] %}active-nav{% endif %}" href="{{ url_for('admin.system') }}">Hệ thống</a></li>
+            {% elif current_user.role == 'teacher' %}
+                <li class="nav-item"><a class="nav-link text-white {% if request.endpoint in ['teacher.dashboard', 'teacher.lessons', 'teacher.create_lesson', 'teacher.edit_lesson', 'teacher.exercises', 'teacher.create_exercise', 'teacher.edit_exercise', 'teacher.tests', 'teacher.create_test', 'teacher.edit_test', 'teacher.ai_generate_test'] %}active-nav{% endif %}" href="{{ url_for('teacher.dashboard') }}">Trang quản lý</a></li>
+                <li class="nav-item"><a class="nav-link text-white {% if request.endpoint in ['teacher.learning_results', 'teacher.students', 'teacher.edit_student'] %}active-nav{% endif %}" href="{{ url_for('teacher.learning_results') }}">Kết quả học tập</a></li>
+                <li class="nav-item"><a class="nav-link text-white {% if request.endpoint == 'teacher.reports' %}active-nav{% endif %}" href="{{ url_for('teacher.reports') }}">Báo cáo</a></li>
+                <li class="nav-item"><a class="nav-link text-white {% if request.endpoint in ['teacher.support', 'teacher.reset_all_support'] %}active-nav{% endif %}" href="{{ url_for('teacher.support') }}">Hỗ trợ</a></li>
+            {% else %}
+                <li class="nav-item"><a class="nav-link text-white {% if request.endpoint in ['student.dashboard', 'student.subject_detail', 'student.lesson_detail', 'student.exercise_detail', 'student.test_detail'] %}active-nav{% endif %}" href="{{ url_for('student.dashboard') }}">Trang học tập</a></li>
+                <li class="nav-item"><a class="nav-link text-white {% if request.endpoint in ['student.ai_center', 'student.plan_builder'] %}active-nav{% endif %}" href="{{ url_for('student.ai_center') }}">AI học tập</a></li>
+                <li class="nav-item"><a class="nav-link text-white {% if request.endpoint == 'student.results' %}active-nav{% endif %}" href="{{ url_for('student.results') }}">Kết quả</a></li>
+                <li class="nav-item"><a class="nav-link text-white {% if request.endpoint in ['student.support', 'student.clear_support_history'] %}active-nav{% endif %}" href="{{ url_for('student.support') }}">Hỗ trợ</a></li>
+            {% endif %}
+            <li class="nav-item"><form method="post" action="{{ url_for('auth.logout') }}" class="d-inline"><input type="hidden" name="csrf_token" value="{{ csrf_token() }}"><button class="btn btn-primary" type="submit">Đăng xuất</button></form></li>
+        {% else %}
+            <li class="nav-item"><a class="nav-link text-white" href="{{ url_for('auth.login') }}">Đăng nhập</a></li>
+            <li class="nav-item"><a class="btn btn-primary" href="{{ url_for('auth.register') }}">Đăng ký</a></li>
+        {% endif %}
+      </ul>
+    </div>
+  </div>
+</nav>
+
+<div class="container app-page-shell py-4 py-lg-5">
+    {% with messages = get_flashed_messages(with_categories=true) %}
+      {% if messages %}
+        {% for category, message in messages %}
+          <div class="alert alert-{{ 'danger' if category == 'danger' else category }}">{{ message }}</div>
+        {% endfor %}
+      {% endif %}
+    {% endwith %}
+    {% block content %}{% endblock %}
+</div>
+
+<div class="container app-page-shell pb-4">
+  <div class="surface p-4 footer-surface">
+    <div class="footer-note text-center">
+      <div class="footer-note">Đường dài tri thức chẳng xa, có AI bên cạnh - vượt qua tất cả</div>
+    </div>
+  </div>
+</div>
+
+<script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+
+<script>
+document.querySelectorAll('textarea[data-submit-on-enter="true"]').forEach((field) => {
+  field.addEventListener('keydown', (event) => {
+    if (event.key === 'Enter' && !event.shiftKey) {
+      event.preventDefault();
+      const form = field.closest('form');
+      if (form) {
+        if (typeof form.requestSubmit === 'function') {
+          form.requestSubmit();
+        } else {
+          form.submit();
+        }
+      }
+    }
+  });
+});
+
+(function setupVipClickEffects() {
+  const interactiveSelector = [
+    'a',
+    'button',
+    '.btn',
+    'input[type="submit"]',
+    'input[type="button"]',
+    '[role="button"]',
+    '.nav-link',
+    '.subject-link',
+    '.quick-panel-link'
+  ].join(',');
+
+  const cardChildSelector = '.surface, .quick-panel-card, .postlogin-card, .study-module-card, .metric-card, .table-card';
+
+  const isEligible = (el) => {
+    if (!el || el.dataset.vipBound === '1') return false;
+    if (el.matches('[disabled], .disabled')) return false;
+    const href = el.getAttribute('href');
+    if (el.tagName === 'A' && href && href.trim().toLowerCase().startsWith('javascript:')) return false;
+    return true;
+  };
+
+  const createRipple = (host, event) => {
+    const reduceMotion = window.matchMedia('(prefers-reduced-motion: reduce)').matches;
+    if (reduceMotion || !host) return;
+    const rect = host.getBoundingClientRect();
+    const ripple = document.createElement('span');
+    ripple.className = 'click-ripple';
+    ripple.style.left = `${event.clientX - rect.left}px`;
+    ripple.style.top = `${event.clientY - rect.top}px`;
+    host.appendChild(ripple);
+    window.setTimeout(() => ripple.remove(), 700);
+  };
+
+  document.querySelectorAll(interactiveSelector).forEach((el) => {
+    if (!isEligible(el)) return;
+    el.dataset.vipBound = '1';
+    el.classList.add('click-vip');
+
+    const cardChild = el.matches('.subject-link, .quick-panel-link, .card-link') ? el.querySelector(':scope > .surface, :scope > .quick-panel-card, :scope > .postlogin-card, :scope > .study-module-card, :scope > .metric-card, :scope > .table-card') : null;
+    if (cardChild) {
+      el.classList.add('click-vip-card');
+      cardChild.classList.add('click-vip-surface');
+    }
+
+    const pressTarget = cardChild || el;
+
+    el.addEventListener('pointerdown', (event) => {
+      pressTarget.classList.add('is-pressed');
+      createRipple(pressTarget, event);
+    });
+
+    ['pointerup', 'pointercancel', 'mouseleave', 'dragend', 'blur'].forEach((name) => {
+      el.addEventListener(name, () => {
+        pressTarget.classList.remove('is-pressed');
+      });
+    });
+
+    el.addEventListener('click', () => {
+      const href = el.getAttribute('href') || '';
+      const isHash = href.startsWith('#');
+      const isNewTab = el.getAttribute('target') === '_blank';
+      if ((el.tagName === 'A' && href && !isHash && !isNewTab) || el.type === 'submit') {
+        document.body.classList.add('page-clicking');
+        window.setTimeout(() => document.body.classList.remove('page-clicking'), 220);
+      }
+    });
+  });
+})();
+</script>
+
+{% block extra_scripts %}{% endblock %}
+</body>
+</html>

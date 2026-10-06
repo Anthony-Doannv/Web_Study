@@ -1,0 +1,26 @@
+
+{% extends "base.html" %}
+{% block content %}
+<div class="surface p-4 p-lg-5">
+  <h2 class="fw-bold mb-4">{% if item %}Sửa bài tập{% else %}Thêm bài tập{% endif %}</h2>
+  <form method="post" class="row g-3">
+<input type="hidden" name="csrf_token" value="{{ csrf_token() }}">
+    <div class="col-md-8"><label class="form-label">Tiêu đề</label><input class="form-control" name="title" value="{{ item.title if item else '' }}" required></div>
+    <div class="col-md-2"><label class="form-label">Lớp</label><input class="form-control" type="number" name="grade_level" value="{{ item.grade_level if item else '' }}" required></div>
+    <div class="col-md-2"><label class="form-label">Chương</label><input class="form-control" type="number" name="chapter" value="{{ item.chapter if item else '' }}" required></div>
+    <div class="col-md-4"><label class="form-label">Môn</label>
+      <select class="form-select" name="subject_id" required>
+        {% for s in subjects %}
+          <option value="{{ s.id }}" {% if item and item.subject_id == s.id %}selected{% endif %}>{{ s.name }}</option>
+        {% endfor %}
+      </select>
+    </div>
+    <div class="col-12"><label class="form-label">Nội dung bài tập</label><textarea class="form-control" rows="8" name="content" required>{{ item.content if item else '' }}</textarea></div>
+    <div class="col-12"><label class="form-label">Đáp án mẫu</label><textarea class="form-control" rows="5" name="answer_key">{{ item.answer_key if item else '' }}</textarea></div>
+    <div class="col-12 d-flex gap-2 flex-wrap">
+      <button class="btn btn-primary">Lưu</button>
+      <a class="btn btn-outline-light" href="{{ url_for('teacher.exercises') }}">Quay lại</a>
+    </div>
+  </form>
+</div>
+{% endblock %}

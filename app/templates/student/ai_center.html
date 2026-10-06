@@ -1,0 +1,176 @@
+{% extends "base.html" %}
+{% block content %}
+<div class="student-shell">
+  <aside class="student-sidebar fade-up">
+    <div class="student-sidebar-head mb-3">
+      <div class="brand d-flex align-items-center"><span class="brand-mark pulse-soft">◉</span>EduAI Học tập</div>
+      <div class="text-muted small">Không gian học tập chuyên nghiệp</div>
+    </div>
+    <nav class="student-menu">
+      <a href="{{ url_for('student.dashboard') }}"><span class="soft-icon">🏠</span> Trang học tập</a>
+      <a class="active" href="{{ url_for('student.ai_center') }}"><span class="soft-icon">🤖</span> Phòng chat AI</a>
+      <a href="{{ url_for('student.plan_builder') }}"><span class="soft-icon">🗓️</span> Lộ trình học</a>
+      <a href="{{ url_for('student.results') }}"><span class="soft-icon">📈</span> Kết quả</a>
+      <a href="{{ url_for('student.support') }}"><span class="soft-icon">🛟</span> Hỗ trợ</a>
+    </nav>
+    <div class="student-side-card mt-4">
+      <div class="card-title-strong mb-2">Mẹo hỏi AI hiệu quả</div>
+      <div class="text-muted small" style="line-height:1.8">
+        Chọn đúng môn, đúng chương và nói rõ em đang cần giải thích, giải từng bước hay tạo câu hỏi ôn tập.
+      </div>
+    </div>
+  </aside>
+  <main>
+    <div class="hero mb-4 fade-up">
+      <div class="badge-soft mb-3">AI học tập nâng cấp</div>
+      <h2 class="fw-bold mb-2">Trợ lý học tập thông minh</h2>
+      <p class="text-muted mb-0">Học tập trở nên dễ dàng với AI.</p>
+    </div>
+    <div class="row g-4 ai-chat-page">
+      <div class="col-12">
+        <div class="surface p-4 mb-4 fade-up-2 ai-chat-main">
+          <div class="d-flex justify-content-between align-items-center flex-wrap gap-2 mb-3">
+            <div>
+              <div class="card-title-strong">Phòng chat AI</div>
+              <div class="text-muted small">Bài gì khó đã có AI lo.</div>
+            </div>
+            <form method="post" action="{{ url_for('student.clear_ai_chat') }}">
+<input type="hidden" name="csrf_token" value="{{ csrf_token() }}">
+              <button class="btn btn-outline-light btn-sm">Xóa lịch sử chat</button>
+            </form>
+          </div>
+          <div class="chat-shell chat-shell-pro ai-chat-history mb-4" id="ai-chat-history">
+            {% if chats %}
+              {% for item in chats %}
+              <div class="chat-row {% if item.role == 'user' %}chat-right{% else %}chat-left{% endif %}">
+                <div class="chat-bubble {% if item.role == 'user' %}chat-user{% else %}chat-ai chat-ai-pro{% endif %}">
+                  <div class="chat-role">{{ 'Bạn' if item.role == 'user' else 'Gemini AI' }}</div>
+                  <div class="chat-text {% if item.role != 'user' %}ai-markdown{% endif %}">{{ item.message }}</div>
+                </div>
+              </div>
+              {% endfor %}
+            {% else %}
+              <div class="empty-chat-state">
+                <div class="icon-badge mb-3">✨</div>
+                <div class="fw-bold mb-2">Chưa có lịch sử chat</div>
+                <div class="text-muted">Hãy bắt đầu bằng một câu hỏi cụ thể như “Giải thích tập hợp là gì” hoặc “Giải bài này từng bước”.</div>
+              </div>
+            {% endif %}
+          </div>
+          <form method="post" class="row g-3">
+<input type="hidden" name="csrf_token" value="{{ csrf_token() }}">
+            <input type="hidden" name="action" value="chat">
+            <div class="col-md-4">
+              <label class="form-label">Môn học</label>
+              <select class="form-select" name="subject_id" required>
+                {% for s in subjects %}
+                <option value="{{ s.id }}" {% if selected_subject_id == s.id %}selected{% endif %}>{{ s.name }}</option>
+                {% endfor %}
+              </select>
+            </div>
+            <div class="col-md-4">
+              <label class="form-label">Chương</label>
+              <select class="form-select" name="chapter">
+                {% for c in range(1, 11) %}
+                <option value="{{ c }}" {% if selected_chapter == c %}selected{% endif %}>Chương {{ c }}</option>
+                {% endfor %}
+              </select>
+            </div>
+            <div class="col-md-4">
+              <label class="form-label">Kiểu hỗ trợ</label>
+              <select class="form-select" name="mode">
+                <option value="explain">Giải thích dễ hiểu</option>
+                <option value="solve">Giải từng bước</option>
+                <option value="quiz">Tạo câu hỏi ôn tập</option>
+              </select>
+            </div>
+            <div class="col-12">
+              <div class="d-flex flex-wrap gap-2 mb-2">
+                <span class="badge-soft">Gợi ý nhanh:</span>
+                <span class="badge-soft">Tóm tắt chương</span>
+                <span class="badge-soft">Mẹo làm nhanh</span>
+                <span class="badge-soft">Giải từng bước</span>
+                <span class="badge-soft">Tạo 3 câu hỏi</span>
+              </div>
+            </div>
+            <div class="col-12">
+              <label class="form-label">Câu hỏi của bạn</label>
+              <textarea class="form-control chat-input-pro" data-submit-on-enter="true" rows="6" name="message" placeholder="Ví dụ: Hãy giải thích dễ hiểu tập hợp là gì, cho em ví dụ đơn giản và 2 bài tập ngắn." required></textarea>
+            </div>
+            <div class="col-12 d-grid">
+              <button class="btn btn-primary">Gửi câu hỏi cho AI</button>
+            </div>
+          </form>
+        </div>
+      </div>
+      <div class="col-12 col-xxl-4">
+        <div class="surface p-4 mb-4 fade-up-2 ai-chat-sidecard">
+          <div class="card-title-strong mb-3">Tạo chương trình phù hợp</div>
+          <div class="text-muted mb-3">AI sẽ xây lộ trình theo đúng số ngày bạn chọn, chia rõ mục tiêu, nội dung, bài tập và ghi chú.</div>
+          <a href="{{ url_for('student.plan_builder') }}" class="btn btn-outline-light w-100">Mở bảng hỏi tạo lộ trình</a>
+        </div>
+      </div>
+    </div>
+  </main>
+</div>
+{% endblock %}
+
+{% block extra_scripts %}
+<script>
+document.querySelectorAll('.ai-markdown').forEach((el) => {
+  let text = el.textContent || "";
+  text = text.replace(/\*\*(.*?)\*\*/g, "$1");
+  text = text.replace(/^\s*\*\s+/gm, "• ");
+  text = text.replace(/^\s*\-\s+/gm, "• ");
+  text = text.replace(/\$x\^2 = 9\$/g, "x² = 9");
+  text = text.replace(/\$x\^2\$/g, "x²");
+  text = text.replace(/\$x_1\+x_2 = 5\$/g, "x₁ + x₂ = 5");
+  text = text.replace(/\$x_1, x_2\$/g, "x₁, x₂");
+  text = text.replace(/\$\\Delta\$/g, "Δ");
+  text = text.replace(/\$\\mathbb\{N\}\$/g, "N");
+  text = text.replace(/\$\\mathbb\{Z\}\$/g, "Z");
+  text = text.replace(/\$\\mathbb\{Q\}\$/g, "Q");
+  text = text.replace(/\$\\mathbb\{R\}\$/g, "R");
+  text = text.replace(/\\subseteq/g, "⊆");
+  text = text.replace(/\\in/g, "∈");
+  text = text.replace(/\\le/g, "≤");
+  text = text.replace(/\\ge/g, "≥");
+  text = text.replace(/\\times/g, "×");
+  text = text.replace(/\\frac\{([^{}]+)\}\{([^{}]+)\}/g, "($1)/($2)");
+  text = text.replace(/\\\(/g, "");
+  text = text.replace(/\\\)/g, "");
+  text = text.replace(/\$/g, "");
+  text = text.replace(/[{}]/g, "");
+  text = text.replace(/^---$/gm, "");
+  text = text.replace(/\n{3,}/g, "\n\n");
+
+  const lines = text.split("\n");
+  const html = [];
+  let inList = false;
+  lines.forEach((raw) => {
+    const line = raw.trim();
+    if (!line) {
+      if (inList) { html.push("</ul>"); inList = false; }
+      return;
+    }
+    if (line.startsWith("• ")) {
+      if (!inList) { html.push("<ul class='ai-clean-list'>"); inList = true; }
+      html.push("<li>" + line.substring(2) + "</li>");
+    } else if (/^(Câu\s*\d+|Mục tiêu|Thời lượng|Nội dung|Bài tập|Ghi chú|Kết luận|Phân tích đề|Cách làm|Lời giải chi tiết|Bước\s*\d+)[:]?$/i.test(line)) {
+      if (inList) { html.push("</ul>"); inList = false; }
+      html.push("<h6 class='ai-mini-heading'>" + line + "</h6>");
+    } else {
+      if (inList) { html.push("</ul>"); inList = false; }
+      html.push("<p class='ai-clean-paragraph'>" + line + "</p>");
+    }
+  });
+  if (inList) html.push("</ul>");
+  el.innerHTML = html.join("");
+});
+
+const chatHistory = document.getElementById('ai-chat-history');
+if (chatHistory) {
+  chatHistory.scrollTop = chatHistory.scrollHeight;
+}
+</script>
+{% endblock %}

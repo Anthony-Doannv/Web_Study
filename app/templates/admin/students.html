@@ -1,0 +1,50 @@
+{% extends "base.html" %}
+{% block content %}
+<div class="teacher-shell">
+  {% set active = "students" %}
+  {% include "_partials/admin_sidebar.html" %}
+  <main>
+    <div class="page-header-card mb-4">
+      <div class="header-copy">
+        <h2 class="page-title mb-1">Quản lý học viên</h2>
+        <p class="text-muted mb-0">Xem danh sách học viên, chỉnh sửa nhanh thông tin và giữ bố cục bảng thẳng hàng, dễ theo dõi.</p>
+      </div>
+      <div class="page-header-actions">
+        <a href="{{ url_for('admin.dashboard') }}" class="btn btn-outline-light">Về trang quản trị</a>
+      </div>
+    </div>
+<div class="surface p-4">
+    {% if students %}
+    <div class="table-responsive">
+        <table class="table table-hover align-middle">
+            <thead><tr><th>ID</th><th>Họ tên</th><th>Email</th><th>Khối lớp</th><th>Lớp</th><th>Vai trò</th><th class="text-center">Thao tác</th></tr></thead>
+            <tbody>
+                {% for student in students %}
+                <tr>
+                    <td>{{ student.id }}</td>
+                    <td class="fw-semibold">{{ student.full_name }}</td>
+                    <td>{{ student.email }}</td>
+                    <td>{% if student.grade_level %}Lớp {{ student.grade_level }}{% else %}-{% endif %}</td>
+                    <td>{{ student.class_name or '-' }}</td>
+                    <td><span class="badge bg-info text-dark">{{ student.role or 'student' }}</span></td>
+                    <td class="text-center">
+                        <div class="d-flex justify-content-center gap-2 flex-wrap">
+                            <a href="{{ url_for('admin.edit_student', item_id=student.id) }}" class="btn btn-warning btn-sm">Sửa</a>
+                            <form method="POST" action="{{ url_for('admin.delete_student', item_id=student.id) }}" onsubmit="return confirm('Bạn có chắc muốn xóa học sinh này không?');" class="d-inline">
+<input type="hidden" name="csrf_token" value="{{ csrf_token() }}">
+                                <button type="submit" class="btn btn-danger btn-sm">Xóa</button>
+                            </form>
+                        </div>
+                    </td>
+                </tr>
+                {% endfor %}
+            </tbody>
+        </table>
+    </div>
+    {% else %}
+    <div class="alert alert-info rounded-4 mb-0">Chưa có học sinh nào đăng ký.</div>
+    {% endif %}
+</div>
+  </main>
+</div>
+{% endblock %}

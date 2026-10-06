@@ -1,0 +1,138 @@
+{% extends "base.html" %}
+{% block title %}Trang học tập | EduAI{% endblock %}
+{% block content %}
+<div class="student-dashboard-v2">
+  <section class="student-welcome-v2 mb-4">
+    <div class="student-welcome-copy">
+      <div class="student-eyebrow"><i class="bi bi-stars"></i> KHÔNG GIAN HỌC TẬP</div>
+      <h1>Chào {{ current_user.full_name }}</h1>
+      <p>Hôm nay bạn muốn bắt đầu từ đâu? Chọn một môn học hoặc hỏi EduAI khi cần giải thích nhanh.</p>
+      <div class="student-welcome-actions">
+        <a class="student-btn student-btn-primary" href="#subjects">
+          <i class="bi bi-book"></i>
+          Chọn môn học
+        </a>
+        <a class="student-btn student-btn-secondary" href="{{ url_for('student.ai_center') }}">
+          <i class="bi bi-stars"></i>
+          Hỏi EduAI
+        </a>
+      </div>
+    </div>
+
+    <div class="student-profile-v2">
+      <div class="student-profile-icon"><i class="bi bi-mortarboard"></i></div>
+      <div>
+        <div class="student-profile-label">Hồ sơ học tập</div>
+        <div class="student-profile-grade">Khối {{ current_user.grade_level }}</div>
+        <div class="student-profile-class">{{ current_user.class_name or 'Chưa cập nhật lớp' }}</div>
+      </div>
+    </div>
+  </section>
+
+  <section class="student-quick-grid mb-5" aria-label="Truy cập nhanh">
+    <a class="student-quick-card" href="{{ url_for('student.ai_center') }}">
+      <span class="student-quick-icon"><i class="bi bi-robot"></i></span>
+      <span class="student-quick-copy">
+        <strong>Trợ lý AI</strong>
+        <small>Hỏi bài, giải thích và luyện tập</small>
+      </span>
+      <i class="bi bi-arrow-up-right student-quick-arrow"></i>
+    </a>
+
+    <a class="student-quick-card" href="{{ url_for('student.plan_builder') }}">
+      <span class="student-quick-icon"><i class="bi bi-calendar2-check"></i></span>
+      <span class="student-quick-copy">
+        <strong>Kế hoạch học</strong>
+        <small>Tạo lộ trình học theo mục tiêu</small>
+      </span>
+      <i class="bi bi-arrow-up-right student-quick-arrow"></i>
+    </a>
+
+    <a class="student-quick-card" href="{{ url_for('student.results') }}">
+      <span class="student-quick-icon"><i class="bi bi-graph-up-arrow"></i></span>
+      <span class="student-quick-copy">
+        <strong>Kết quả</strong>
+        <small>Xem điểm và tiến độ học tập</small>
+      </span>
+      <i class="bi bi-arrow-up-right student-quick-arrow"></i>
+    </a>
+
+    <a class="student-quick-card" href="{{ url_for('student.support') }}">
+      <span class="student-quick-icon"><i class="bi bi-headset"></i></span>
+      <span class="student-quick-copy">
+        <strong>Hỗ trợ</strong>
+        <small>Gửi yêu cầu khi bạn gặp vấn đề</small>
+      </span>
+      <i class="bi bi-arrow-up-right student-quick-arrow"></i>
+    </a>
+  </section>
+
+  <section id="subjects" class="student-subject-section">
+    <div class="student-section-heading">
+      <div>
+        <div class="student-section-kicker">MÔN HỌC CỦA BẠN</div>
+        <h2>Chọn môn để bắt đầu</h2>
+        <p>Vào bài học, luyện bài tập và làm kiểm tra theo từng môn.</p>
+      </div>
+      <a class="student-text-link" href="{{ url_for('student.ai_center') }}">
+        Mở AI học tập <i class="bi bi-arrow-right"></i>
+      </a>
+    </div>
+
+    <div class="student-subject-grid">
+      {% for subject in subjects %}
+        {% if 'Toán' in subject.name %}
+          {% set subject_svg = 'svg/math.svg' %}
+          {% set subject_code = 'TOÁN' %}
+        {% elif 'Ngữ văn' in subject.name %}
+          {% set subject_svg = 'svg/literature.svg' %}
+          {% set subject_code = 'VĂN' %}
+        {% elif 'Tiếng Anh' in subject.name %}
+          {% set subject_svg = 'svg/english.svg' %}
+          {% set subject_code = 'ANH' %}
+        {% elif 'Vật lý' in subject.name %}
+          {% set subject_svg = 'svg/physics.svg' %}
+          {% set subject_code = 'LÝ' %}
+        {% elif 'Hóa học' in subject.name %}
+          {% set subject_svg = 'svg/chemistry.svg' %}
+          {% set subject_code = 'HÓA' %}
+        {% elif 'Sinh học' in subject.name %}
+          {% set subject_svg = 'svg/biology.svg' %}
+          {% set subject_code = 'SINH' %}
+        {% elif 'Lịch sử' in subject.name %}
+          {% set subject_svg = 'svg/history.svg' %}
+          {% set subject_code = 'SỬ' %}
+        {% elif 'Địa lý' in subject.name %}
+          {% set subject_svg = 'svg/geography.svg' %}
+          {% set subject_code = 'ĐỊA' %}
+        {% else %}
+          {% set subject_svg = 'svg/civics.svg' %}
+          {% set subject_code = 'GDCD' %}
+        {% endif %}
+
+        <a class="student-subject-card-v2" href="{{ url_for('student.subject_detail', subject_id=subject.id) }}">
+          <div class="student-subject-topline">
+            <span class="student-subject-code">{{ subject_code }}</span>
+            <span class="student-subject-open"><i class="bi bi-arrow-up-right"></i></span>
+          </div>
+          <div class="student-subject-visual">
+            <img src="{{ url_for('static', filename=subject_svg) }}" alt="{{ subject.name }}">
+          </div>
+          <div class="student-subject-copy">
+            <h3>{{ subject.name }}</h3>
+            <p>Bài học · Bài tập · Kiểm tra</p>
+          </div>
+        </a>
+      {% else %}
+        <div class="student-empty-state">
+          <i class="bi bi-journal-x"></i>
+          <div>
+            <strong>Chưa có môn học</strong>
+            <p>Danh sách môn học cho khối của bạn hiện đang trống.</p>
+          </div>
+        </div>
+      {% endfor %}
+    </div>
+  </section>
+</div>
+{% endblock %}

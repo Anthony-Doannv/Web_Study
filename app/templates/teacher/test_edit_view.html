@@ -1,0 +1,166 @@
+{% extends "base.html" %}
+{% block content %}
+<div class="exam-shell">
+  <aside class="exam-sidebar">
+    <div class="exam-sidebar-card">
+      <div class="badge-soft mb-3">Bài kiểm tra · Chế độ sửa</div>
+      <form method="post" id="test-editor-form">
+<input type="hidden" name="csrf_token" value="{{ csrf_token() }}">
+        <div class="mb-3">
+          <label class="form-label">Tiêu đề</label>
+          <input class="form-control" name="title" value="{{ item.title }}" required>
+        </div>
+        <div class="row g-3 mb-3">
+          <div class="col-6"><label class="form-label">Lớp</label><input class="form-control" type="number" name="grade_level" value="{{ item.grade_level }}" required></div>
+          <div class="col-6"><label class="form-label">Chương</label><input class="form-control" type="number" name="chapter" value="{{ item.chapter if item.test_type == 'chapter' else '' }}"></div>
+        </div>
+        <div class="mb-3"><label class="form-label">Môn</label>
+          <select class="form-select" name="subject_id" required>
+            {% for s in subjects %}
+              <option value="{{ s.id }}" {% if item.subject_id == s.id %}selected{% endif %}>{{ s.name }}</option>
+            {% endfor %}
+          </select>
+        </div>
+        <div class="mb-3"><label class="form-label">Loại kiểm tra</label>
+          <select class="form-select" name="test_type">
+            <option value="chapter" {% if item.test_type == 'chapter' %}selected{% endif %}>Kiểm tra theo chương</option>
+            <option value="midterm_hk1" {% if item.test_type == 'midterm_hk1' %}selected{% endif %}>Kiểm tra giữa học kì 1</option>
+            <option value="midterm_hk2" {% if item.test_type == 'midterm_hk2' %}selected{% endif %}>Kiểm tra giữa học kì 2</option>
+            <option value="final_hk1" {% if item.test_type == 'final_hk1' %}selected{% endif %}>Kiểm tra cuối học kì 1</option>
+            <option value="final_hk2" {% if item.test_type == 'final_hk2' %}selected{% endif %}>Kiểm tra cuối học kì 2</option>
+            <option value="term" {% if item.test_type == 'term' %}selected{% endif %}>Kiểu cũ (term)</option>
+          </select>
+        </div>
+        <div class="exam-meta-list mb-3">
+          <div class="exam-meta-item"><span>Phân loại</span><strong>{{ display_type }}</strong></div>
+          <div class="exam-meta-item"><span>Số câu</span><strong data-question-total>{{ questions|length }}</strong></div>
+        </div>
+        <div class="mb-3"><label class="form-label">Hướng dẫn</label><textarea class="form-control" rows="5" name="instructions" required>{{ item.instructions }}</textarea></div>
+        <div class="mb-3"><label class="form-label">Ghi chú / đáp án mô tả</label><textarea class="form-control" rows="4" name="answer_key">{{ item.answer_key }}</textarea></div>
+        <input type="hidden" name="question_count" value="{{ questions|length }}" id="test-question-count">
+        <div class="d-grid gap-2 mt-3">
+          <button type="button" class="btn btn-outline-light" id="add-test-question">+ Thêm câu hỏi</button>
+          <button class="btn btn-primary">Lưu bài kiểm tra</button>
+          <a href="{{ url_for('teacher.tests') }}" class="btn btn-outline-light">Quay lại</a>
+        </div>
+      </form>
+    </div>
+  </aside>
+
+  <section class="exam-main" id="test-question-list">
+    {% for q in questions %}
+    {% set q_index = loop.index0 %}
+    <article class="exam-question-card editor-question-card" id="question-{{ loop.index }}" data-question-item>
+      <div class="exam-question-top justify-content-between align-items-center flex-wrap gap-2">
+        <div class="exam-order">Câu <span data-question-number>{{ loop.index }}</span></div>
+        <button type="button" class="btn btn-sm btn-outline-danger" data-delete-question>Xóa câu này</button>
+      </div>
+      <label class="form-label">Nội dung câu hỏi</label>
+      <textarea class="form-control mb-3" rows="2" name="question_{{ q_index }}" data-field="question" form="test-editor-form" required>{{ q.question }}</textarea>
+      <div class="option-grid">
+        {% for option in q.options %}
+        {% set choice = ['A','B','C','D'][loop.index0] %}
+        <label class="choice-tile" for="test_{{ q_index }}_{{ choice }}">
+          <input id="test_{{ q_index }}_{{ choice }}" class="choice-input" type="radio" name="answer_{{ q_index }}" value="{{ choice }}" data-answer-input form="test-editor-form" {% if q.answer == choice %}checked{% endif %}>
+          <span class="choice-mark" data-choice-label>{{ choice }}</span>
+          <span class="choice-text"><input class="form-control" type="text" name="option_{{ q_index }}_{{ loop.index0 }}" data-option-index="{{ loop.index0 }}" value="{{ option }}" form="test-editor-form" required></span>
+        </label>
+        {% endfor %}
+      </div>
+      <div class="row g-3 mt-1">
+        <div class="col-md-3"><label class="form-label">Mức độ</label><input class="form-control" name="difficulty_{{ q_index }}" data-field="difficulty" value="{{ q.difficulty }}" form="test-editor-form"></div>
+        <div class="col-md-9"><label class="form-label">Giải thích</label><textarea class="form-control" rows="2" name="explanation_{{ q_index }}" data-field="explanation" form="test-editor-form">{{ q.explanation }}</textarea></div>
+      </div>
+    </article>
+    {% endfor %}
+  </section>
+</div>
+
+<template id="test-question-template">
+  <article class="exam-question-card editor-question-card" data-question-item>
+    <div class="exam-question-top justify-content-between align-items-center flex-wrap gap-2">
+      <div class="exam-order">Câu <span data-question-number></span></div>
+      <button type="button" class="btn btn-sm btn-outline-danger" data-delete-question>Xóa câu này</button>
+    </div>
+    <label class="form-label">Nội dung câu hỏi</label>
+    <textarea class="form-control mb-3" rows="2" data-field="question" form="test-editor-form" required></textarea>
+    <div class="option-grid">
+      {% for choice in ['A','B','C','D'] %}
+      <label class="choice-tile">
+        <input class="choice-input" type="radio" data-answer-input value="{{ choice }}" form="test-editor-form" {% if loop.first %}checked{% endif %}>
+        <span class="choice-mark" data-choice-label>{{ choice }}</span>
+        <span class="choice-text"><input class="form-control" type="text" data-option-index="{{ loop.index0 }}" value="Phương án {{ choice }}" form="test-editor-form" required></span>
+      </label>
+      {% endfor %}
+    </div>
+    <div class="row g-3 mt-1">
+      <div class="col-md-3"><label class="form-label">Mức độ</label><input class="form-control" data-field="difficulty" value="Trung bình" form="test-editor-form"></div>
+      <div class="col-md-9"><label class="form-label">Giải thích</label><textarea class="form-control" rows="2" data-field="explanation" form="test-editor-form"></textarea></div>
+    </div>
+  </article>
+</template>
+
+<script>
+(() => {
+  const form = document.getElementById('test-editor-form');
+  const list = document.getElementById('test-question-list');
+  const template = document.getElementById('test-question-template');
+  const countInput = document.getElementById('test-question-count');
+  const totalEl = document.querySelector('[data-question-total]');
+  const addBtn = document.getElementById('add-test-question');
+
+  function reindexQuestions() {
+    const cards = Array.from(list.querySelectorAll('[data-question-item]'));
+    cards.forEach((card, index) => {
+      card.id = `question-${index + 1}`;
+      card.querySelector('[data-question-number]').textContent = index + 1;
+      const questionField = card.querySelector('[data-field="question"]');
+      questionField.name = `question_${index}`;
+
+      const difficultyField = card.querySelector('[data-field="difficulty"]');
+      difficultyField.name = `difficulty_${index}`;
+
+      const explanationField = card.querySelector('[data-field="explanation"]');
+      explanationField.name = `explanation_${index}`;
+
+      card.querySelectorAll('[data-answer-input]').forEach((input) => {
+        input.name = `answer_${index}`;
+        input.id = `test_${index}_${input.value}`;
+        const tile = input.closest('.choice-tile');
+        if (tile) tile.setAttribute('for', input.id);
+      });
+
+      card.querySelectorAll('[data-option-index]').forEach((input) => {
+        input.name = `option_${index}_${input.dataset.optionIndex}`;
+      });
+    });
+    countInput.value = cards.length;
+    if (totalEl) totalEl.textContent = cards.length;
+  }
+
+  addBtn.addEventListener('click', () => {
+    const node = template.content.firstElementChild.cloneNode(true);
+    list.appendChild(node);
+    reindexQuestions();
+    node.scrollIntoView({ behavior: 'smooth', block: 'center' });
+    const firstField = node.querySelector('[data-field="question"]');
+    if (firstField) firstField.focus();
+  });
+
+  list.addEventListener('click', (event) => {
+    const deleteBtn = event.target.closest('[data-delete-question]');
+    if (!deleteBtn) return;
+    const cards = list.querySelectorAll('[data-question-item]');
+    if (cards.length <= 1) {
+      alert('Cần giữ lại ít nhất 1 câu hỏi.');
+      return;
+    }
+    deleteBtn.closest('[data-question-item]')?.remove();
+    reindexQuestions();
+  });
+
+  form.addEventListener('submit', reindexQuestions);
+  reindexQuestions();
+})();
+</script>
+{% endblock %}

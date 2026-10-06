@@ -1,0 +1,16 @@
+<aside class="admin-sidebar fade-up role-sidebar sidebar-unified sidebar-admin">
+  <div class="brand d-flex align-items-center mb-2"><span class="brand-mark pulse-soft">◉</span>WEB-AI Admin</div>
+  <div class="text-muted small mb-4">Khu quản trị hệ thống</div>
+  <nav class="admin-menu">
+    <a class="{% if active == 'dashboard' %}active{% endif %}" href="{{ url_for('admin.dashboard') }}"><span class="soft-icon">🛡️</span><span>Trang quản trị</span></a>
+    <a class="{% if active == 'accounts' %}active{% endif %}" href="{{ url_for('admin.accounts') }}"><span class="soft-icon">👥</span><span>Quản lý người dùng</span></a>
+    <a class="{% if active == 'subjects' %}active{% endif %}" href="{{ url_for('admin.subjects') }}"><span class="soft-icon">📚</span><span>Quản lý môn học</span></a>
+    <a class="{% if active == 'system' %}active{% endif %}" href="{{ url_for('admin.system') }}"><span class="soft-icon">⚙️</span><span>Quản lý hệ thống</span></a>
+    <a class="{% if active == 'support' %}active{% endif %}" href="{{ url_for('admin.support') }}"><span class="soft-icon">🛟</span><span>Hỗ trợ</span></a>
+  </nav>
+  <div class="admin-side-card mt-4 sidebar-note-card">
+    <div class="small text-muted">Vai trò hiện tại</div>
+    <div class="admin-role-big mt-2">ADMIN</div>
+    <div class="text-muted small mt-2">Admin có thể quản lý người dùng, môn học, hệ thống và các yêu cầu gửi tới bộ phận quản trị.</div>
+  </div>
+</aside>

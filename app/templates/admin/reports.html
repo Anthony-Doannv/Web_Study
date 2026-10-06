@@ -1,0 +1,39 @@
+{% extends "base.html" %}
+{% block content %}
+<div class="teacher-shell">
+  {% set active = "reports" %}
+  {% include "_partials/admin_sidebar.html" %}
+  <main>
+    <div class="page-header-card mb-4">
+      <div class="header-copy">
+        <h2 class="page-title mb-1">Báo cáo học tập</h2>
+        <p class="text-muted mb-0">Theo dõi số bài nộp và điểm trung bình của học viên trong một giao diện đã được căn chỉnh lại đồng đều hơn.</p>
+      </div>
+      <div class="page-header-actions">
+        <a href="{{ url_for('admin.dashboard') }}" class="btn btn-outline-light">Về trang quản trị</a>
+      </div>
+    </div>
+<div class="surface p-4">
+  <div class="section-title mb-3">Báo cáo học tập</div>
+  <div class="table-responsive">
+    <table class="table">
+      <thead><tr><th>Học sinh</th><th>Khối</th><th>Lớp</th><th>Số bài nộp</th><th>Điểm TB</th></tr></thead>
+      <tbody>
+        {% for row in report_rows %}
+        <tr>
+          <td>{{ row.student.full_name }}</td>
+          <td>{{ row.student.grade_level or '-' }}</td>
+          <td>{{ row.student.class_name or '-' }}</td>
+          <td>{{ row.submission_count }}</td>
+          <td>{{ row.avg_score }}</td>
+        </tr>
+        {% else %}
+        <tr><td colspan="5">Chưa có dữ liệu</td></tr>
+        {% endfor %}
+      </tbody>
+    </table>
+  </div>
+</div>
+  </main>
+</div>
+{% endblock %}

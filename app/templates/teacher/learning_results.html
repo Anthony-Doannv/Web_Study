@@ -1,0 +1,157 @@
+{% extends "base.html" %}
+{% block content %}
+<div class="teacher-shell">
+  {% set active = 'learning_results' %}
+  {% include '_partials/teacher_sidebar.html' %}
+  <main>
+    <div class="page-header-card mb-4">
+      <div>
+        <h2 class="page-title mb-1">Kết quả học tập</h2>
+        <p class="text-muted mb-0">Theo dõi tổng quan kết quả học viên bằng biểu đồ trực quan: phân bố theo khối, điểm trung bình theo khối, theo môn và mức độ hoạt động theo môn.</p>
+      </div>
+      <div class="page-header-actions">
+        <a href="{{ url_for('teacher.dashboard') }}" class="btn btn-outline-light">Về trang quản lý</a>
+      </div>
+    </div>
+
+    <div class="row g-3 mb-4">
+      {% for label, value in overview_stats.items() %}
+      <div class="col-md-6 col-xl-3">
+        <div class="metric-card metric-card-soft h-100">
+          <div class="text-muted">{{ label }}</div>
+          <div class="big mt-2">{{ value }}</div>
+        </div>
+      </div>
+      {% endfor %}
+    </div>
+
+    <div class="row g-4 mb-4">
+      <div class="col-lg-6">
+        <div class="chart-card chart-card-soft h-100">
+          <div class="admin-section-title">Phân bố học viên theo khối</div>
+          <div class="chart-canvas-wrap chart-canvas-wrap-soft"><canvas id="gradeChart"></canvas></div>
+        </div>
+      </div>
+      <div class="col-lg-6">
+        <div class="chart-card chart-card-soft h-100">
+          <div class="admin-section-title">Điểm trung bình theo khối</div>
+          <div class="chart-canvas-wrap chart-canvas-wrap-soft"><canvas id="avgScoreChart"></canvas></div>
+        </div>
+      </div>
+    </div>
+
+    <div class="row g-4">
+      <div class="col-lg-6">
+        <div class="chart-card chart-card-soft h-100">
+          <div class="admin-section-title">Điểm trung bình theo từng môn</div>
+          <div class="chart-canvas-wrap chart-canvas-wrap-soft"><canvas id="avgSubjectChart"></canvas></div>
+        </div>
+      </div>
+      <div class="col-lg-6">
+        <div class="chart-card chart-card-soft h-100">
+          <div class="admin-section-title">Mức độ hoạt động theo môn</div>
+          <div class="chart-canvas-wrap chart-canvas-wrap-soft"><canvas id="subjectActivityChart"></canvas></div>
+        </div>
+      </div>
+    </div>
+  </main>
+</div>
+{% endblock %}
+{% block extra_scripts %}
+<script>
+const rootStyles = getComputedStyle(document.documentElement);
+const themeText = rootStyles.getPropertyValue('--chart-text').trim() || rootStyles.getPropertyValue('--text').trim() || '#224842';
+const themeGrid = rootStyles.getPropertyValue('--chart-grid').trim() || 'rgba(99,150,139,0.16)';
+const palette = ['#7ed7c6','#9ae4d3','#65c8b7','#b6ead8','#4fb7a6','#d4f4e9','#7ab6ff','#ffc97d','#ff9f8d'];
+const commonLegend = { labels: { color: themeText, font: { family: 'Inter, system-ui, sans-serif', weight: '700' } } };
+const commonTicks = { color: themeText, font: { family: 'Inter, system-ui, sans-serif', weight: '700' } };
+
+new Chart(document.getElementById('gradeChart'), {
+  type: 'bar',
+  data: {
+    labels: {{ grade_counts.keys()|list|tojson }},
+    datasets: [{
+      label: 'Số học viên',
+      data: {{ grade_counts.values()|list|tojson }},
+      backgroundColor: palette,
+      borderRadius: 12,
+      borderSkipped: false
+    }]
+  },
+  options: {
+    responsive: true,
+    plugins: { legend: commonLegend },
+    scales: {
+      x: { ticks: commonTicks, grid: { color: themeGrid } },
+      y: { ticks: commonTicks, grid: { color: themeGrid }, beginAtZero: true }
+    }
+  }
+});
+
+new Chart(document.getElementById('avgScoreChart'), {
+  type: 'line',
+  data: {
+    labels: {{ avg_score_by_grade|map(attribute='grade')|list|tojson }},
+    datasets: [{
+      label: 'Điểm trung bình',
+      data: {{ avg_score_by_grade|map(attribute='avg')|list|tojson }},
+      borderColor: '#59bba8',
+      backgroundColor: 'rgba(126,215,198,0.24)',
+      fill: true,
+      tension: 0.35,
+      pointBackgroundColor: '#4aa998',
+      pointRadius: 4
+    }]
+  },
+  options: {
+    responsive: true,
+    plugins: { legend: commonLegend },
+    scales: {
+      x: { ticks: commonTicks, grid: { color: themeGrid } },
+      y: { ticks: commonTicks, grid: { color: themeGrid }, min: 0, max: 10 }
+    }
+  }
+});
+
+new Chart(document.getElementById('avgSubjectChart'), {
+  type: 'bar',
+  data: {
+    labels: {{ avg_score_by_subject|map(attribute='name')|list|tojson }},
+    datasets: [{
+      label: 'Điểm trung bình',
+      data: {{ avg_score_by_subject|map(attribute='avg')|list|tojson }},
+      backgroundColor: palette,
+      borderRadius: 12,
+      borderSkipped: false
+    }]
+  },
+  options: {
+    responsive: true,
+    plugins: { legend: commonLegend },
+    scales: {
+      x: { ticks: commonTicks, grid: { display: false } },
+      y: { ticks: commonTicks, grid: { color: themeGrid }, min: 0, max: 10 }
+    }
+  }
+});
+
+new Chart(document.getElementById('subjectActivityChart'), {
+  type: 'doughnut',
+  data: {
+    labels: {{ subject_submission_counts|map(attribute='name')|list|tojson }},
+    datasets: [{
+      label: 'Lượt nộp bài',
+      data: {{ subject_submission_counts|map(attribute='count')|list|tojson }},
+      backgroundColor: palette,
+      borderWidth: 0
+    }]
+  },
+  options: {
+    responsive: true,
+    plugins: {
+      legend: { position: 'bottom', labels: { color: themeText, padding: 16, font: { family: 'Inter, system-ui, sans-serif', weight: '700' } } }
+    }
+  }
+});
+</script>
+{% endblock %}

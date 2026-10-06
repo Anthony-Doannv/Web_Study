@@ -1,0 +1,98 @@
+{% extends "base.html" %}
+{% block title %}Đăng nhập - EduAI{% endblock %}
+{% block content %}
+<div class="auth-page-bleed auth-page-refined auth-premium-page">
+  <div class="auth-shell-wide auth-center-wrap">
+    <div class="surface auth-authboard auth-authboard-modern auth-authboard-premium auth-authboard-ultra">
+      <div class="auth-main-title auth-main-title-shift auth-main-title-premium">Đăng nhập</div>
+      <div class="row g-0 auth-authboard-row auth-authboard-modern-row auth-board-equal-row">
+        <div class="col-lg-5 d-flex">
+          <div class="auth-role-panel auth-role-panel-modern auth-role-panel-premium auth-role-panel-ultra h-100 w-100">
+            <div class="auth-panel-heading-wrap auth-panel-heading-center">
+              <span class="auth-kicker auth-kicker-center">Hệ truy cập</span>
+              <div class="auth-panel-heading">Chọn vai trò</div>
+            </div>
+            <div class="auth-role-grid" id="loginRoleGrid">
+              <button type="button" class="auth-role-card auth-role-card-premium auth-role-card-ultra is-active" data-role="student">
+                <span class="role-icon student-role">🎓</span>
+                <span class="auth-role-copy auth-role-copy-title-only">
+                  <strong>Học sinh</strong>
+                  <small>Không gian học tập</small>
+                </span>
+              </button>
+              <button type="button" class="auth-role-card auth-role-card-premium auth-role-card-ultra" data-role="teacher">
+                <span class="role-icon teacher-role">👩‍🏫</span>
+                <span class="auth-role-copy auth-role-copy-title-only">
+                  <strong>Giáo viên</strong>
+                  <small>Quản lý nội dung</small>
+                </span>
+              </button>
+              <button type="button" class="auth-role-card auth-role-card-premium auth-role-card-ultra" data-role="admin">
+                <span class="role-icon admin-role">🛡️</span>
+                <span class="auth-role-copy auth-role-copy-title-only">
+                  <strong>Admin</strong>
+                  <small>Điều hành hệ thống</small>
+                </span>
+              </button>
+            </div>
+            <div class="auth-panel-metrics">
+              <div class="auth-metric-card">
+                <span class="auth-metric-value">AI</span>
+                <span class="auth-metric-label">Đồng hành</span>
+              </div>
+              <div class="auth-metric-card">
+                <span class="auth-metric-value">LMS</span>
+                <span class="auth-metric-label">Học tập</span>
+              </div>
+            </div>
+          </div>
+        </div>
+        <div class="col-lg-7 d-flex">
+          <div class="auth-form-wrap auth-form-wrap-modern auth-form-wrap-premium auth-form-wrap-ultra h-100 w-100">
+            <div class="auth-form-top auth-form-title-only auth-form-header-premium auth-form-top-center">
+              <div>
+                <span class="auth-kicker auth-kicker-center">EduAI</span>
+                <div class="section-title mb-0">Tài khoản</div>
+              </div>
+            </div>
+            <form method="post" class="row g-3 auth-form-clean auth-form-modern auth-form-ultra" id="loginForm">
+<input type="hidden" name="csrf_token" value="{{ csrf_token() }}">
+              <input type="hidden" name="role" id="loginRoleInput" value="student">
+              <div class="col-12">
+                <label class="form-label">Email</label>
+                <input type="email" name="email" class="form-control form-control-lg" placeholder="you@example.com" value="{{ request.form.get('email', '') }}" required>
+              </div>
+              <div class="col-12">
+                <label class="form-label">Mật khẩu</label>
+                <input type="password" name="password" class="form-control form-control-lg" placeholder="••••••••" required>
+              </div>
+              <div class="col-12 d-grid auth-submit-wrap-ultra">
+                <button class="btn btn-primary btn-lg auth-submit-btn auth-submit-btn-ultra">Đăng nhập</button>
+              </div>
+              <div class="col-12 auth-form-note auth-form-note-premium justify-content-between flex-wrap">
+                <span>Tài khoản học sinh mới</span>
+                <a href="{{ url_for('auth.register') }}">Đăng ký</a>
+              </div>
+            </form>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+{% endblock %}
+{% block extra_scripts %}
+<script>
+(function () {
+  const roleInput = document.getElementById('loginRoleInput');
+  const cards = document.querySelectorAll('#loginRoleGrid .auth-role-card');
+  cards.forEach((card) => {
+    card.addEventListener('click', () => {
+      cards.forEach((item) => item.classList.remove('is-active'));
+      card.classList.add('is-active');
+      roleInput.value = card.dataset.role;
+    });
+  });
+})();
+</script>
+{% endblock %}

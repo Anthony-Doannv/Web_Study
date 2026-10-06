@@ -1,0 +1,77 @@
+{% extends "base.html" %}
+{% block content %}
+<div class="teacher-shell">
+  {% set active = 'reports' %}
+  {% include '_partials/teacher_sidebar.html' %}
+  <main>
+    <div class="page-header-card mb-4">
+      <div>
+        <h2 class="page-title mb-1">Báo cáo học tập</h2>
+        <p class="text-muted mb-0">Theo dõi số bài nộp, điểm trung bình và lần nộp gần nhất của học viên theo khối và môn học.</p>
+      </div>
+      <div class="page-header-actions">
+        <a href="{{ url_for('teacher.dashboard') }}" class="btn btn-outline-light">Về trang quản lý</a>
+      </div>
+    </div>
+
+    <div class="surface p-4 mb-4">
+      <form method="get" class="row g-3 align-items-end">
+        <div class="col-md-4">
+          <label class="form-label">Lọc theo khối</label>
+          <select name="grade_level" class="form-select">
+            <option value="">Tất cả khối</option>
+            {% for grade in grade_levels %}
+            <option value="{{ grade }}" {% if grade_level == grade %}selected{% endif %}>Khối {{ grade }}</option>
+            {% endfor %}
+          </select>
+        </div>
+        <div class="col-md-4">
+          <label class="form-label">Lọc theo môn</label>
+          <select name="subject_id" class="form-select">
+            <option value="">Tất cả môn học</option>
+            {% for subject in subjects %}
+            <option value="{{ subject.id }}" {% if subject_id == subject.id %}selected{% endif %}>{{ subject.name }}</option>
+            {% endfor %}
+          </select>
+        </div>
+        <div class="col-md-4 d-flex gap-2">
+          <button class="btn btn-primary flex-grow-1">Áp dụng bộ lọc</button>
+          <a href="{{ url_for('teacher.reports') }}" class="btn btn-outline-light">Đặt lại</a>
+        </div>
+      </form>
+    </div>
+
+    <div class="surface p-4">
+      <div class="section-title mb-3">Danh sách báo cáo</div>
+      <div class="table-responsive">
+        <table class="table table-aligned">
+          <thead>
+            <tr>
+              <th>Học viên</th>
+              <th>Khối</th>
+              <th>Lớp</th>
+              <th>Số bài nộp</th>
+              <th>Điểm TB</th>
+              <th>Lần nộp gần nhất</th>
+            </tr>
+          </thead>
+          <tbody>
+            {% for row in report_rows %}
+            <tr>
+              <td class="fw-semibold">{{ row.student.full_name }}</td>
+              <td>{{ row.student.grade_level or '-' }}</td>
+              <td>{{ row.student.class_name or '-' }}</td>
+              <td>{{ row.submission_count }}</td>
+              <td>{{ row.avg_score }}</td>
+              <td>{% if row.latest_submission %}{{ row.latest_submission.strftime('%d/%m/%Y %H:%M') }}{% else %}-{% endif %}</td>
+            </tr>
+            {% else %}
+            <tr><td colspan="6">Chưa có dữ liệu phù hợp bộ lọc.</td></tr>
+            {% endfor %}
+          </tbody>
+        </table>
+      </div>
+    </div>
+  </main>
+</div>
+{% endblock %}

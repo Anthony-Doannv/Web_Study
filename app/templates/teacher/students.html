@@ -1,0 +1,84 @@
+{% extends "base.html" %}
+{% block content %}
+<div class="teacher-shell">
+  {% set active = 'dashboard' %}
+  {% include '_partials/teacher_sidebar.html' %}
+  <main>
+    <div class="page-header-card mb-4">
+      <div class="header-copy">
+        <div class="badge-soft mb-3"><span class="glow-dot"></span> Theo dõi học viên gọn và đồng đều</div>
+        <h2 class="page-title mb-1">Quản lý học viên</h2>
+        <p class="text-muted mb-0">Theo dõi danh sách học viên, tiến độ nộp bài và cập nhật thông tin lớp học trong một bố cục gọn hơn để đồng đều với các mục quản lý khác.</p>
+      </div>
+      <div class="page-header-actions">
+        <a href="{{ url_for('teacher.dashboard') }}" class="btn btn-outline-light">Về trang quản lý</a>
+      </div>
+    </div>
+
+    <div class="surface p-4 mb-4">
+      <form class="row g-3 align-items-end">
+        <div class="col-md-4">
+          <label class="form-label">Tìm học viên</label>
+          <input type="text" class="form-control" name="keyword" placeholder="Tên, email hoặc lớp" value="{{ keyword }}">
+        </div>
+        <div class="col-md-3">
+          <label class="form-label">Khối</label>
+          <select class="form-select" name="grade_level">
+            <option value="">-- Tất cả khối --</option>
+            {% for grade in grade_levels %}
+            <option value="{{ grade }}" {% if grade_level == grade %}selected{% endif %}>Khối {{ grade }}</option>
+            {% endfor %}
+          </select>
+        </div>
+        <div class="col-md-5 d-flex gap-2 flex-wrap">
+          <button class="btn btn-primary" type="submit">Lọc danh sách</button>
+          <a href="{{ url_for('teacher.students') }}" class="btn btn-outline-light">Đặt lại</a>
+        </div>
+      </form>
+    </div>
+
+    <div class="surface p-4">
+      {% if items %}
+      <div class="table-responsive">
+        <table class="table table-hover table-aligned">
+          <thead>
+            <tr>
+              <th>Học viên</th>
+              <th>Khối / Lớp</th>
+              <th>Lượt nộp</th>
+              <th>Điểm TB</th>
+              <th>Hỗ trợ gửi GV</th>
+              <th>Nộp gần nhất</th>
+              <th class="text-center">Thao tác</th>
+            </tr>
+          </thead>
+          <tbody>
+            {% for row in items %}
+            <tr>
+              <td>
+                <div class="fw-semibold">{{ row.student.full_name }}</div>
+                <div class="small text-muted">{{ row.student.email }}</div>
+              </td>
+              <td>Lớp {{ row.student.grade_level or '-' }} · {{ row.student.class_name or 'Chưa cập nhật' }}</td>
+              <td>{{ row.submission_count }}</td>
+              <td>{{ row.avg_score }}</td>
+              <td>{{ row.support_total }}</td>
+              <td>{% if row.latest_submission %}{{ row.latest_submission.strftime('%d/%m/%Y %H:%M') }}{% else %}-{% endif %}</td>
+              <td class="text-center">
+                <div class="table-actions justify-content-center">
+                  <a href="{{ url_for('teacher.edit_student', item_id=row.student.id) }}" class="btn btn-warning btn-sm">Cập nhật</a>
+                  <a href="{{ url_for('teacher.reports', grade_level=row.student.grade_level, subject_id=request.args.get('subject_id', '')) }}" class="btn btn-outline-light btn-sm">Xem báo cáo</a>
+                </div>
+              </td>
+            </tr>
+            {% endfor %}
+          </tbody>
+        </table>
+      </div>
+      {% else %}
+      <div class="alert mb-0">Chưa có học viên phù hợp với bộ lọc hiện tại.</div>
+      {% endif %}
+    </div>
+  </main>
+</div>
+{% endblock %}

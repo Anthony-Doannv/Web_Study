@@ -1,0 +1,38 @@
+{% extends "base.html" %}
+{% block content %}
+<div class="surface p-4 p-lg-5">
+  <div class="d-flex justify-content-between align-items-center flex-wrap gap-2 mb-4">
+    <div>
+      <h2 class="fw-bold mb-1">AI tạo đề và lưu vào ngân hàng đề</h2>
+      <div class="text-muted">Tạo nhanh bài kiểm tra theo môn/lớp/chương bằng Gemini hoặc fallback AI.</div>
+    </div>
+    <a class="btn btn-outline-light" href="{{ url_for('admin.tests') }}">Quay lại danh sách đề</a>
+  </div>
+  <form method="post" class="row g-3">
+<input type="hidden" name="csrf_token" value="{{ csrf_token() }}">
+    <div class="col-md-6">
+      <label class="form-label">Tiêu đề đề</label>
+      <input class="form-control" name="title" placeholder="Ví dụ: Đề AI chương 3 - Toán 10">
+    </div>
+    <div class="col-md-2">
+      <label class="form-label">Lớp</label>
+      <input class="form-control" type="number" name="grade_level" min="6" max="12" required>
+    </div>
+    <div class="col-md-2">
+      <label class="form-label">Chương</label>
+      <input class="form-control" type="number" name="chapter" min="1" max="10" required>
+    </div>
+    <div class="col-md-2">
+      <label class="form-label">Môn</label>
+      <select class="form-select" name="subject_id" required>
+        {% for s in subjects %}
+        <option value="{{ s.id }}">{{ s.name }}</option>
+        {% endfor %}
+      </select>
+    </div>
+    <div class="col-12 d-grid">
+      <button class="btn btn-primary">Tạo đề bằng AI và lưu</button>
+    </div>
+  </form>
+</div>
+{% endblock %}
